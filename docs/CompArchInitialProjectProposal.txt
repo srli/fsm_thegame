@@ -1,0 +1,34 @@
+﻿Project Name: FSM: THE GAME
+
+
+Team Members: Sophia Li, Lindsey Vanderlyn, Raagini Rameshwar
+
+
+We’re creating a pedagogical tool to teach future comp arch students about FSMs in an intuitive manner. The game will be in PyGame, and allow the user to drag and drop elements onto a screen to construct a FSM bubble chart that solves some puzzle. The game will also have a simulation in which the user can test and see the results of their FSM. When the user starts testing their FSM, some form of graphic will light up the state they are in and the control signals that go out into the ‘world’ so the user can see what is happening and whether their solution is actually solving the puzzle.
+
+
+
+
+Red / Yellow / Green Feature sets:
+
+
+Green: The minimum deliverable is one functional level, with an introductory story and drag and drop interface that can allow us to create an FSM from pre-built states and user selected transition conditions and a test for the functionality. The graphics will consist of geometric shapes in different colors, with some external graphics. 
+
+
+Yellow: More than one level, with each following level increasing in complexity. 
+
+
+Red: User designs the inputs and outputs of each of the states to solve puzzles. Better graphics
+
+
+
+
+2 potential things that can go wrong, with mitigations
+1. Simulating the FSM within the game is maybe more complicated than we expect. Therefore, debugging will play a large part in our work plan. We will also begin with a very simple FSM so we can devote time to the simulation.
+2. We get caught up in implementing the view for our project, that functionality is compromised. To account for this, we will be compartmentalizing our team so each person is working a separate component for the first week, so we have working FSM simulations and such before we start working on making the project pretty.
+
+
+What are your next steps?
+1. Plan exactly what we want our game to do, and break up our requirements into chunks that are separate and could be deliverables in their own right.
+2. Write a workplan based on the results of our planning.
+3. Find previous work we’ve done that will give us a solid game frame that we can use, so we don’t have to develop the really basic Python scaffolding.
