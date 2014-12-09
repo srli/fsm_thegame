@@ -10,21 +10,50 @@ from pygame.locals import *
 from world import *
 from menu_test import *
          
+class State:
+    def __init__ (self, name, transition_conditions, next_states, enables):
+        self.name = name
+        self.transition = False
+        self.transition_conditions = transition_conditions
+        self.next_states = next_states
+        self.enables = enables
+        
+    def check_transition(self, transition):
+         for i in transition_conditions:
+             if transition > transition_conditions[i]:
+                 return next_states[i]
+                 
+         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
         self.level = 0
+        self.state_pointer = 0
         self.build_world(0) #builds first screen immediately
+        self.state_names = []
+        self.states = []
+        self.transition_conditions = []
+        self.backgrounds = []
+        self.current_state = states[state_pointer]
         
     def build_world(self, level_num):
         """Looks at the objects imported from the world python script and builds
         """
+        current_level = world.world[level_num]
+        self.state_names = current_level.states
+        self.backgrounds = current_level.backgrounds
+    
+    def build_transitions(self):
         pass
     
     
-    def update(self):
+    def build_states(self):
+        for i in self.state_names:
+            temp_state = State(self.state_names[i], self.transition_conditions[i])
+            states.append(temp_state)
+    
+    def update(self, transition = 0):
         """updates based on inputs from the controller"""
-        pass
-    
+        self.state_pointer = self.current_state.check_transition(self.transition)
         
 class PyGameWindowView:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
@@ -34,7 +63,7 @@ class PyGameWindowView:
         self.screen = screen
     
     def draw(self):
-        """Draws updated view every 0.0001 seconds, or as defined by sleep at end of main loop
+        """Draws updated view every 0.001 seconds, or as defined by sleep at end of main loop
         Does not do any updating on its own, takes model objects and displays        
         """
         self.screen.fill(pygame.Color(0,0,0)) #Background
