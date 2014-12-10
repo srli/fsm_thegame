@@ -7,28 +7,20 @@
    Based on a pure PyGame implementation
 """
 
-import sys
-
-sys.path.append("../")
-sys.path.append("./")
-
-import pygame
+import pygame, time
 import planes
-from collections import deque
 
-class Material():
 
-    def __init__(self, name):
+class Drag():
+    def __init__(self, name, xpos, ypos):
         self.name = name
-        self.strength = 0
-        self.meltingPoint = 0
-        self.Xpos = 0
-        self.Ypos = 0
+        self.Xpos = xpos
+        self.Ypos = ypos
 
     def clicked(self, button_name):
         self.image.fill((255,0,0))
 
-class MaterialView(planes.Plane):
+class DragView(planes.Plane):
     def __init__(self, name, rect, draggable = True, grab = True):
         planes.Plane.__init__(self, name, rect, draggable, grab)
         self.image.fill((255, 0, 0))
@@ -59,17 +51,17 @@ class DropZoneView(planes.Plane):
 
 class DropDisplay(planes.Display):
 	def dropped_upon(self, plane, coordinates):
-         if isinstance(plane, MaterialView):
+         if isinstance(plane, DropZoneView):
 #             print plane.Xpos
              planes.Display.dropped_upon(self, plane, (plane.Xpos, plane.Ypos))
 
 class Model():
     def __init__(self):
-        self.materials = []
+        self.drag = []
         self.dropZones = []
 
-    def makeMaterials(self, name):
-        self.materials.append(Material(name))
+    def makeDrag(self, name, xpos, ypos):
+        self.drag.append(Drag(name, xpos, ypos))
     
     def makeDropZone(self, name, x, y, length, width):
         self.dropZones.append(DropZone(name, x, y, length, width))
@@ -81,21 +73,21 @@ class View():
         self.model = model
         self.screen = screen
         
-    def updateMats(self, screen):        
-        for material in range (len(self.model.materials)):
-            thisMaterial = self.model.materials[material]
-            thisMaterial.Xpos = 750
-            thisMaterial.Ypos = 800/len(self.model.materials) * material
-            screen.sub(MaterialView(thisMaterial.name, pygame.Rect((thisMaterial.Xpos, thisMaterial.Ypos, 20, 20), draggable=True, grab=True)))                       
+    def update(self, screen):        
+        for droppy in self.model.dropZones:
+            this_droppy = droppy
+            screen.sub(DropZoneView(this_droppy.name, pygame.Rect((this_droppy.Xpos, this_droppy.Ypos, this_droppy.length, this_droppy.width), draggable=True, grab=True)))
+            print ("Made a drop zone!")
+              
+        for draggy in self.model.drag:
+            this_draggy = draggy
+            screen.sub(DragView(this_draggy.name, pygame.Rect((this_draggy.Xpos, this_draggy.Ypos, 20, 20), draggable=True, grab=True)))                       
             print("Made a plane")
         
-        for zone in range(len(self.model.dropZones)):
-            thisZone = self.model.dropZones[zone]
-            screen.sub(DropZoneView(thisZone.name, pygame.Rect((thisZone.Xpos, thisZone.Ypos, thisZone.length, thisZone.width), draggable=True, grab=True)))
-            print ("Made a drop zone!")
             
             
 if __name__ == "__main__":
+    running = True    
     pygame.init()
     screen = DropDisplay((800, 800))    
     model = Model()
@@ -107,28 +99,26 @@ if __name__ == "__main__":
     
     #Make some zones
     model.makeDropZone("drop1", 0, 0, 100, 100)
-    
     model.makeDropZone("drop2", 700,400, 100,100)    
     
     print ("made some zones")    
     
     #Just to test if materials work
     for i in range(0,4):    
-        model.makeMaterials("mat"+`i`)    
+        model.makeDrag("mat"+`i`, 500, i*50)    
 
     print("made some materials")
     
-    view.updateMats(screen)
+    view.update(screen)
     print("Updated the materials view")
 
-    while True:
+    while running:
         events = pygame.event.get()
-
         for event in events:
             if event.type == pygame.QUIT:
-				print("got pygame.QUIT, terminating")
-				raise SystemExit
+				running = False
 
         screen.process(events)
         screen.render()
         pygame.display.flip()
+        time.sleep(0.001)

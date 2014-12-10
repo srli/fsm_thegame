@@ -19,7 +19,8 @@ class Level:
         self.enables = enables
         self.transitions = transitions      
 
+intro = Level(["hallo", "deathofworld.jpg", "help"], [], [], [])
 act1 = Level(["day", "night"], ["hot", "cold"], ["heater on", "heater off"], [1,2,3])
 act2 = Level(["day", "night"], ["hot", "cold"], ["heater on", "heater off"], [1,2,3])
 
-world = [act1, act2]
+world = [intro, act1, act2]

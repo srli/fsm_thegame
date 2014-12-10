@@ -28,12 +28,14 @@ class Model:      #game encoded in model, view, controller format
     def __init__(self):
         self.level = 0
         self.state_pointer = 0
+        self.background_pointer = 0
         self.build_world(0) #builds first screen immediately
-        self.state_names = []
-        self.states = []
-        self.transition_conditions = []
-        self.backgrounds = []
+        self.state_names = [0]
+        self.states = [0]
+        self.transition_conditions = [0]
+        self.backgrounds = ["default.jpg"] #FILL THIS IN LATER
         self.current_state = states[state_pointer]
+        self.current_background = backgrounds[background_pointer]
         
     def build_world(self, level_num):
         """Looks at the objects imported from the world python script and builds
