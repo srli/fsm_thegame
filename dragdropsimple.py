@@ -49,12 +49,7 @@ class DropZoneView(planes.Plane):
        planes.Plane.dropped_upon(self, plane, coordinates)
        plane.moving = False
 
-class DropDisplay(planes.Display):
-	def dropped_upon(self, plane, coordinates):
-         if isinstance(plane, DropZoneView):
-#             print plane.Xpos
-             planes.Display.dropped_upon(self, plane, (plane.Xpos, plane.Ypos))
-
+            
 class Model():
     def __init__(self):
         self.drag = []
@@ -82,8 +77,7 @@ class View():
         for draggy in self.model.drag:
             this_draggy = draggy
             screen.sub(DragView(this_draggy.name, pygame.Rect((this_draggy.Xpos, this_draggy.Ypos, 20, 20), draggable=True, grab=True)))                       
-            print("Made a plane")
-        
+            print("Made a draggable")
             
             
 if __name__ == "__main__":
@@ -101,16 +95,11 @@ if __name__ == "__main__":
     model.makeDropZone("drop1", 0, 0, 100, 100)
     model.makeDropZone("drop2", 700,400, 100,100)    
     
-    print ("made some zones")    
-    
     #Just to test if materials work
     for i in range(0,4):    
         model.makeDrag("mat"+`i`, 500, i*50)    
 
-    print("made some materials")
-    
     view.update(screen)
-    print("Updated the materials view")
 
     while running:
         events = pygame.event.get()
