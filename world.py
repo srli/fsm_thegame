@@ -16,7 +16,7 @@ class Level:
     def __init__ (self, background, states, enables, transitions):
         self.background = background
         self.states = states
-        self.enables = enables
+        self.enables = enables 
         self.transitions = transitions      
 
 intro = Level(["hallo", "deathofworld.jpg", "help"], [], [], [])

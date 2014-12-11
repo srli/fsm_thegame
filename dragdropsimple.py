@@ -37,6 +37,13 @@ class DropZone():
         print ("made drop Zone with x position", self.Xpos)
 
 
+
+class DropDisplay(planes.Display):
+	def dropped_upon(self, plane, coordinates):
+         if isinstance(plane, MaterialView):
+#             print plane.Xpos
+             planes.Display.dropped_upon(self, plane, (plane.Xpos, plane.Ypos))
+
 class DropZoneView(planes.Plane):
     def __init__(self, name, rect, draggable = False, grab = True):
         self.name = name
