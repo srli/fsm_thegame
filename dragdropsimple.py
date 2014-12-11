@@ -40,7 +40,7 @@ class DropZone():
 
 class DropDisplay(planes.Display):
 	def dropped_upon(self, plane, coordinates):
-         if isinstance(plane, MaterialView):
+         if isinstance(plane, DragView):
 #             print plane.Xpos
              planes.Display.dropped_upon(self, plane, (plane.Xpos, plane.Ypos))
 
