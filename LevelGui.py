@@ -186,7 +186,7 @@ if __name__ == "__main__":
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-				running = False
+			raise SystemExit
 
         screen.process(events)
         screen.render()

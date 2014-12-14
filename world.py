@@ -12,6 +12,8 @@ states
     -transitions
 """
 
+#inits (name, current_index, transition_check, transition_conditions, next_states, enables)
+    
 class Level:
     def __init__ (self, background, states, enables, transitions):
         self.background = background
