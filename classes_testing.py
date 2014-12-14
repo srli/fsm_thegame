@@ -56,7 +56,8 @@ class State(Drop):
     """
     State, a subclass of Drop_zone which has control enables and one or more transition objects
     """
-    def __init__(self, transitions=None, control_signals=[], next_state=None):
+    def __init__(self, name, rect, transitions=None, control_signals=[], next_state=None):
+        Drop.__init__(self, name, rect, draggable=False, grab=True)
         self.transitions = transitions
         self.control_signals = control_signals
 
@@ -65,7 +66,8 @@ class Transition(Drag):
     """
     Transition, a subclass of Drag, which has an attribute of transition conditions
     """
-    def __init__(self, transition_conditions=[]):
+    def __init__(self, name, rect, transition_conditions=[]):
+        Drag.__init__(self, name, rect, draggable=True, grab=True)
         self.transition_conditions = transition_conditions
 
     def is_transitioned(self):
@@ -91,21 +93,19 @@ class Model():
         self.control_signals.append(Drag(name, rect))
     
     def make_state(self, name, rect):
-        self.states.append(Drop(name, rect))
+        self.states.append(State(name, rect))
 
     def update_states(self):
         for state in self.states:
             for signal in self.control_signals:
                 if state.Xpos <= signal.Xpos <= state.Xpos+state.width or state.Xpos <= signal.Xpos+signal.width <= state.Xpos+state.width:
                     if state.Ypos <= signal.Ypos <= state.Ypos+state.height or state.Ypos <= signal.Ypos+signal.height <= state.Ypos+height:
-                        pass
-                        # if signal.name not in state.control_signals:
-
-            #                 state.control_signals.append(name)
-            #         else:
-            #             if signal.name in state.control_signals:
-            #                 state.control_signals.remove(name)
-            # print state.control_signals
+                        if signal.name not in state.control_signals:
+                            state.control_signals.append(signal.name)
+                    else:
+                        if signal.name in state.control_signals:
+                            state.control_signals.remove(signal.name)
+            print(state.name, state.control_signals)
 
 class View():
     def __init__(self, model, screen): #View contains model and screen
