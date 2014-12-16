@@ -10,9 +10,9 @@ from pygame.locals import *
 from world import *
          
 class State:
-    def __init__ (self,  name, current_index, rect): #, transition_check, transition_conditions, next_states, enables):
+    def __init__ (self,  name, rect): #, transition_check, transition_conditions, next_states, enables):
         self.name = name
-        self.current_index = current_index
+        self.current_index = 0
         self.rect = rect
         self.is_dragging = False
         self.transition_check = []
@@ -97,7 +97,7 @@ class Model:      #game encoded in model, view, controller format
         #self.current_background = backgrounds[background_pointer]
         
         self.build_drag_objects(0) #builds first screen immediately
-        #self.build_drop_zones(0)
+        self.build_drop_zones(0)
         
     def build_drag_objects(self, level_num):
         """Looks at the objects imported from the world python script and builds
@@ -113,27 +113,27 @@ class Model:      #game encoded in model, view, controller format
                   "SSSXEEXX",
                   "TTTXXXXX",
                   "TTTXXXXX"] #each block has width 100px, height 75
-        x = 0
+        x = 50
         y = 500
         i = j = k = 0
         for row in layout:
             for col in row:
                 if col == "S":
                     if i < len(self.states_names):
-                        self.states.append(State(self.states_names[i], i, pygame.Rect(x,y,45,20)))
+                        self.states.append(State(self.states_names[i],pygame.Rect(x,y, 60,60)))
                         i += 1
                 elif col == "T":
                     if j < len(self.transitions_names):
                         self.transitions.append(Transition(self.transitions_names[j][0], 
-                                                           self.transitions_names[j][1],self.transitions_names[j][2], pygame.Rect(x,y,45,20)))
+                                                           self.transitions_names[j][1],self.transitions_names[j][2], pygame.Rect(x,y, 60,60)))
                         j += 1
                 elif col == "E":
                     if k < len(self.enables_names):
-                        self.enables.append(Enable(self.enables_names[k], pygame.Rect(x,y,45,20)))
+                        self.enables.append(Enable(self.enables_names[k], pygame.Rect(x,y, 60,60)))
                         k += 1
-                x += 50 #Traverses each column in the world file
-            y += 30 #Goes to the next row
-            x = 0 #Restarts at the first column
+                x += 70 #Traverses each column in the world file
+            y += 70 #Goes to the next row
+            x = 50 #Restarts at the first column
     
     
     def build_drop_zones(self,level_num):
@@ -142,42 +142,68 @@ class Model:      #game encoded in model, view, controller format
         self.transitions_names = current_level.transitions
         self.enables_names = current_level.enables        
         
-        layout = ["XXTXXTXXTXXTXXTXX",
-                  "XXXXXXXXXXXXXXXXX",
+        layout = ["XXTXXXTXXXTXXXTXX",
                   "SXTXSXTXSXTXSXTXS",
                   "EXXXEXXXEXXXEXXXE"]
                   
+        x_width = 700/(3*len(self.transitions_names))
         x = 50
-        y = 0
+        y = 50
         i = j = k = 0
         for row in layout:
             for col in row:
                 if col == "S":
                     if i < len(self.states_names):
-                        self.states_drop_zones.append(State(self.states_names[i], i, pygame.Rect(x,y,45,20)))
+                        self.states_drop_zones.append(State_drop(self.states_names[i], pygame.Rect(x,y,100,100)))
                         i += 1
                 elif col == "T":
                     if j < len(self.transitions_names):
-                        self.transitions_drop_zones.append(Transition(self.transitions_names[j][0], 
-                                                           self.transitions_names[j][1],self.transitions_names[j][2], pygame.Rect(x,y,45,20)))
+                        self.transitions_drop_zones.append(Transition_drop(self.transitions_names[j][0], pygame.Rect(x,y,100,70)))
                         j += 1
                 elif col == "E":
                     if k < len(self.enables_names):
-                        self.enables_drop_zones.append(Enable(self.enables_names[k], pygame.Rect(x,y,45,20)))
+                        self.enables_drop_zones.append(Enable_drop(self.enables_names[k], pygame.Rect(x+10,y+10,80,80)))
                         k += 1
                 x += x_width #Traverses each column in the world file
-            y += y_width #Goes to the next row
+            y += 100 #Goes to the next row
             x = 50 #Restarts at the first column
 
     def link_states(self):
-        pass
+        print "linking states"
+        index = 0
+        for state_drop in self.states_drop_zones: #indexes all the states properly
+            for state_drag in self.states:
+                if state_drop.rect.contains(state_drag.rect):
+                    state_drag.current_index = index
+                    index += 1 
+        h = 0
+        while h < len(self.states):
+            self.states[h].next_states.append(h%len(self.states))
+            h += 1
+                    
+        i = 0
+        while i < len(self.transitions_drop_zones): #name, transition check, transition conditions
+            transition_drop = self.transitions_drop_zones[i]
+            for transition_drag in self.transitions:
+                if transition_drop.rect.contains(transition_drag.rect):
+                    self.states[i].transition_check.append(transition_drag.transition_check_type)
+                    self.states[i].transition_conditions.append(transition_drag.value)
+            i += 1
+        
+        j = 0
+        while j < len(self.enables_drop_zones):
+            enable_drop = self.enables_drop_zones[j]
+            for enable_drag in self.enables:
+                if enable_drop.rect.contains(enable_drag.rect):
+                    self.states[j].enables.append(enable_drag.name)
+            j += 1 
+        print self.states[0].name, self.states[0].enables, self.states[0].transition_check, self.states[0].transition_conditions   
    
-   
-   
-    def update(self, transition = 0):
+    def update(self):
         """updates based on inputs from the controller"""
         if self.beginning_simulation:
             self.link_states()
+            self.beginning_simulation = False
         
 class View:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
@@ -195,10 +221,13 @@ class View:
         pygame.draw.line(self.screen, (255,255,255), (50,0), (50,800))
         pygame.draw.line(self.screen, (255,255,255), (750,0), (750,800))
         
+        alldroppys = self.model.states_drop_zones + self.model.transitions_drop_zones + self.model.enables_drop_zones
+        for droppy in alldroppys:
+            pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
         for state in self.model.states: #Draws each wall block
-            pygame.draw.rect(screen, pygame.Color(255, 255, 255), state.rect)
+            pygame.draw.rect(screen, pygame.Color(255, 125, 255), state.rect)
         for transition in self.model.transitions: #Draws each wall block
-            pygame.draw.rect(screen, pygame.Color(255, 255, 255), transition.rect)
+            pygame.draw.rect(screen, pygame.Color(255, 255, 155), transition.rect)
         for enable in self.model.enables: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
@@ -227,7 +256,9 @@ class Controller:
     
     def check_buttons(self):
         if self.model.start_button.collidepoint((mouseX, mouseY)):
-            print "starting!"              
+            self.model.beginning_simulation = True            
+            print "starting!"
+            
     
     def un_drag(self):        
         element = self.all_rects[self.drag_index]
@@ -237,11 +268,11 @@ class Controller:
         for element in self.all_rects:
             if element.rect.collidepoint((mouseX, mouseY)) and self.mouse_held:
                 element.is_dragging = True
-                print "dragging", element.name
+                #print "dragging", element.name
                 self.drag_index = self.all_rects.index(element)
-                print self.drag_index
+                #print self.drag_index
             if element.is_dragging:
-                print "is dragging", element.name
+                #print "is dragging", element.name
                 element.rect.y = mouseY# - element.rect.size[1] // 2
                 element.rect.x = mouseX# - element.rect.size[0] // 2
 
