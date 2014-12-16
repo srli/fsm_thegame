@@ -16,7 +16,11 @@ class Drag(planes.Plane):
         planes.Plane.__init__(self, name, rect, draggable, grab)
         self.name = name
         self.image.fill((255, 0, 0))
+        self.Xpos = rect.x
+        self.Ypos = rect.y
         self.rect = rect
+        self.height = rect.height
+        self.width = rect.width
 
     def clicked(self, button_name):
         self.image.fill((255,0,0))
@@ -24,11 +28,14 @@ class Drag(planes.Plane):
 class Drop(planes.Plane):
     def __init__(self, name, rect, draggable=False, grab=True):
         planes.Plane.__init__(self, name, rect, draggable, grab)
-        
         self.name = name
         #print ("made drop Zone with x position", self.Xpos)
-
-        self.rect = rect        
+#
+        self.Xpos = rect.x
+        self.Ypos = rect.y
+#        self.height = rect.height
+#        self.width = rect.width
+        
         self.image.fill((0,0,255))
     
     def dropped_upon(self, plane, coordinates):
@@ -40,8 +47,8 @@ class Drop(planes.Plane):
         """ 
         updates the model position for a drag object or drag object child whenever it's dropped on a drop object or drop object child
         """
-        plane.rect.x = coordinates[0]+self.rect.x
-        plane.rect.y = coordinates[1]+self.rect.y
+        plane.Xpos = coordinates[0]+self.Xpos
+        plane.Ypos = coordinates[1]+self.Ypos
         # print(plane.name, plane.Xpos, plane.Ypos)
 
 
@@ -49,11 +56,15 @@ class State(Drop):
     """
     State, a subclass of Drop_zone which has control enables and one or more transition objects
     """
-    def __init__(self, name, rect, transitions=None, control_signals=[], next_state=None):
+    def __init__(self, name, rect): #, transitions=None, control_signals=[], next_state=None):
         Drop.__init__(self, name, rect, draggable=False, grab=True)
-        self.transitions = transitions
-        self.state_control_signals = control_signals
+        self.transitions = []
+        self.state_control_signals = []
         self.rect = rect
+#        self.transitions = transitions
+#        self.state_control_signals = control_signals
+#        self.rect = rect        
+        
  
 class Transition(Drag):
     """
@@ -89,16 +100,21 @@ class Model():
         self.states.append(State(name, rect))
 
     def update_states(self):
-        for s in self.states:
-            # print s.name
-            for signal in self.all_control_signals:
-                if s.rect.contains(signal.rect):
-                    if signal.name not in s.state_control_signals:
-                            s.state_control_signals.append(signal.name)
-                    elif signal.name in s.state_control_signals:
-                            s.state_control_signals.remove(signal.name)
-            print(s.name, s.state_control_signals)
-
+#        for s in self.states:
+##            # print s.name
+        s = self.states[0]
+        for signal in self.all_control_signals:
+            if not s.rect.contains(signal.rect):
+                print signal.name, "not in state"
+            if s.rect.contains(signal.rect):
+                if signal.name not in s.state_control_signals:
+                        s.state_control_signals.append(signal.name)
+#                    elif signal.name in s.state_control_signals:
+#                            s.state_control_signals.remove(signal.name)
+        print(self.states[0].name, self.states[0].state_control_signals)
+        print(self.states[1].name, self.states[1].state_control_signals)
+        print self.all_control_signals[0].rect.x
+        
 class View():
     def __init__(self, model, screen): #View contains model and screen
         self.model = model
@@ -141,8 +157,8 @@ if __name__ == "__main__":
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
-        # model.update_states()
+        model.update_states()
         screen.process(events)
         screen.render()
         pygame.display.flip()
-        time.sleep(0.001)
+        time.sleep(0.1)
