@@ -9,46 +9,46 @@
 
 import pygame, time
 from pygame.locals import *
-import planes as pl
-
-
-class Drag(pl.Plane): #instantiating a Plane class that has been imported from planes
-    def __init__(self, name, rect, draggable=True, grab=True):
-        pl.Plane.__init__(self, name, rect, draggable, grab)
-        self.name = name
-        self.image.fill((255, 0, 0))
-        self.Xpos = rect.x
-        self.Ypos = rect.y
-        self.rect = rect
-        self.height = rect.height
-        self.width = rect.width
-
-    def clicked(self, button_name):
-        self.image.fill((255,0,0))
-
-class Drop(pl.Plane):
-    def __init__(self, name, rect, draggable=False, grab=True):
-        pl.Plane.__init__(self, name, rect, draggable, grab)
-        self.name = name
-        #print ("made drop Zone with x position", self.Xpos)
-        self.Xpos = rect.x
-        self.Ypos = rect.y
+#import planes as pl
+#
+#
+#class Drag(pl.Plane): #instantiating a Plane class that has been imported from planes
+#    def __init__(self, name, rect, draggable=True, grab=True):
+#        pl.Plane.__init__(self, name, rect, draggable, grab)
+#        self.name = name
+#        self.image.fill((255, 0, 0))
+#        self.Xpos = rect.x
+#        self.Ypos = rect.y
+#        self.rect = rect
 #        self.height = rect.height
 #        self.width = rect.width
-        self.image.fill((0,0,255))
-    
-    def dropped_upon(self, plane, coordinates):
-        pl.Plane.dropped_upon(self, plane, coordinates)
-        pl.moving = False
-        #self.update_drag(plane, coordinates)
-
-    def update_drag(self,plane, coordinates):
-        """ 
-        updates the model position for a drag object or drag object child whenever it's dropped on a drop object or drop object child
-        """
-        plane.Xpos = coordinates[0]+self.Xpos
-        plane.Ypos = coordinates[1]+self.Ypos
-        # print(plane.name, plane.Xpos, plane.Ypos)
+#
+#    def clicked(self, button_name):
+#        self.image.fill((255,0,0))
+#
+#class Drop(pl.Plane):
+#    def __init__(self, name, rect, draggable=False, grab=True):
+#        pl.Plane.__init__(self, name, rect, draggable, grab)
+#        self.name = name
+#        #print ("made drop Zone with x position", self.Xpos)
+#        self.Xpos = rect.x
+#        self.Ypos = rect.y
+##        self.height = rect.height
+##        self.width = rect.width
+#        self.image.fill((0,0,255))
+#    
+#    def dropped_upon(self, plane, coordinates):
+#        pl.Plane.dropped_upon(self, plane, coordinates)
+#        pl.moving = False
+#        #self.update_drag(plane, coordinates)
+#
+#    def update_drag(self,plane, coordinates):
+#        """ 
+#        updates the model position for a drag object or drag object child whenever it's dropped on a drop object or drop object child
+#        """
+#        plane.Xpos = coordinates[0]+self.Xpos
+#        plane.Ypos = coordinates[1]+self.Ypos
+#        # print(plane.name, plane.Xpos, plane.Ypos)
 
 
 class State(Drop):
