@@ -14,6 +14,7 @@ class State:
         self.name = name
         self.current_index = current_index
         self.rect = rect
+        self.is_dragging = False
         self.transition_check = []
         self.transition_conditions = []
         self.next_states = []
@@ -48,11 +49,13 @@ class Transition:
         self.transition_check_type = transition_check_type
         self.value = value
         self.rect = rect
+        self.is_dragging = False
     
 class Enable:
     def __init__(self, name, rect):
         self.name = name
         self.rect = rect
+        self.is_dragging = False
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
@@ -127,7 +130,7 @@ class View:
         Does not do any updating on its own, takes model objects and displays        
         """
         self.screen.fill(pygame.Color(0,0,0)) #Background
-        pygame.draw.line(self.screen, (255,255,255), (0,250), (700,250))
+        pygame.draw.line(self.screen, (255,255,255), (0,450), (800,450))
         for state in self.model.states: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), state.rect)
         for transition in self.model.transitions: #Draws each wall block
@@ -143,28 +146,37 @@ class Controller:
     def __init__(self, model):
         """ Initializes controller to deal with keyboard input """
         self.model = model
+        self.mouse_held = False
+        self.is_dragging = False
+        self.mouseX = 0
+        self.mouseY = 0
             
     def handle_pygame_mouse(self, event):
         """Takes position of mouse click and passes coordinates through interactibility check and applies
         proper reactions"""
-        x, y = event.pos #Sets click position
-        for state in self.model.states: #Draws each wall block
-            if state.rect.collidepoint(event.pos):
-                state.rect.x = x
-                state.rect.y = y
-        for transition in self.model.transitions: #Draws each wall block
-            if transition.rect.collidepoint(event.pos):
-                transition.rect.x = x
-                transition.rect.y = y
-        for enable in self.model.enables: #Draws each wall block
-            if enable.rect.collidepoint(event.pos):
-                enable.rect.x = x
-                enable.rect.y = y
-        
+        self.mouseX, self.mouseY = pygame.mouse.get_pos()
+        if event.type == MOUSEBUTTONDOWN: #when key is pressed we look at position and respond
+            self.mouse_held = True
+        if event.type == MOUSEBUTTONUP: #when key is pressed we look at position and respond
+             self.mouse_held = False
+             self.is_dragging = False
+        self.update(event)
+    
+    def update(self, model):
+        all_rects = self.model.states + self.model.transitions + self.model.enables
+        for element in all_rects:
+            if element.rect.collidepoint((self.mouseX, self.mouseY)) and self.mouse_held:
+                element.is_dragging = True
+            if element.is_dragging:
+                element.rect.y = self.mouseY - element.rect.size[1] // 2
+                element.rect.x = self.mouseX - element.rect.size[0] // 2
+
+      
 if __name__ == '__main__':
     pygame.init()   #initializes our game
     size = (800, 800)
     screen = pygame.display.set_mode(size)
+    clock = pygame.time.Clock()
     model = Model()
     view = View(model,screen)
     controller = Controller(model)
@@ -178,8 +190,9 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            if event.type == MOUSEBUTTONDOWN: #when key is pressed we look at position and respond
+            if event.type == MOUSEBUTTONDOWN or event.type == MOUSEBUTTONUP: #when key is pressed we look at position and respond
                 controller.handle_pygame_mouse(event)
+
         #model.update()
         view.draw()
-        time.sleep(0.001)
+        clock.tick(60)
