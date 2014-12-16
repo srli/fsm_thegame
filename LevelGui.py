@@ -43,8 +43,8 @@ class Drop(planes.Plane):
     def dropped_upon(self, plane, coordinates):
        planes.Plane.dropped_upon(self, plane, coordinates)
        plane.moving = False
-       plane.XPos = coordinates[0]
-       plane.YPos = coordinates[1]
+       plane.XPos = self.XPos + coordinates[0]
+       plane.YPos = self.YPos + coordinates[1]
 
 class Toolbar(planes.Plane):
     def __init__(self, name, rect, transition_conditions, controls, draggable = False, grab = True):
