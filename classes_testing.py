@@ -47,9 +47,9 @@ class Drop(planes.Plane):
         """ 
         updates the model position for a drag object or drag object child whenever it's dropped on a drop object or drop object child
         """
-        plane.Xpos = coordinates[0]
-        plane.Ypos = coordinates[1]
-        print(plane.name, plane.Xpos, plane.Ypos)
+        plane.Xpos = coordinates[0]+self.Xpos
+        plane.Ypos = coordinates[1]+self.Ypos
+        # print(plane.name, plane.Xpos, plane.Ypos)
 
 
 class State(Drop):
@@ -68,7 +68,7 @@ class Transition(Drag):
     """
     def __init__(self, name, rect, transition_conditions=[]):
         Drag.__init__(self, name, rect, draggable=True, grab=True)
-        self.transition_conditions = transition_conditions
+        self.conditions = transition_conditions
 
     def is_transitioned(self):
         """
@@ -81,7 +81,7 @@ class Drop_Display(planes.Display):
     def dropped_upon(self, plane, coordinates):
         if isinstance(plane, Drop):
             planes.Display.dropped_upon(self, plane, (plane.rect.centerx, plane.rect.centery))
-        print(coordinates)
+        # print(coordinates)
 
 class Model():
     def __init__(self, current_state=None):
@@ -90,23 +90,24 @@ class Model():
         self.current_state = current_state
 
     def make_control_signal(self, name, rect):
-        self.control_signals.append(Drag(name, rect))
+        self.all_control_signals.append(Drag(name, rect))
     
     def make_state(self, name, rect):
         self.states.append(State(name, rect))
 
     def update_states(self):
-        for state in self.states:
-            print state.name
+        for s in self.states:
+            # print s.name
             for signal in self.all_control_signals:
-                if (state.Xpos <= signal.Xpos <= state.Xpos+state.width) or (state.Xpos <= signal.Xpos+signal.width <= state.Xpos+state.width):
-                    if (state.Ypos <= signal.Ypos <= state.Ypos+state.height) or (state.Ypos <= signal.Ypos+signal.height <= state.Ypos+height):
-                        if signal.name not in state.control_signals:
-                            state.control_signals.append(signal.name)
+                if (s.Xpos <= signal.Xpos <= s.Xpos+s.width) or (s.Xpos <= signal.Xpos+signal.width <= s.Xpos+s.width):
+                    print(signal.Xpos, signal.Ypos)
+                    if (s.Ypos <= signal.Ypos <= s.Ypos+s.height) or (s.Ypos <= signal.Ypos+signal.height <= s.Ypos+height):
+                        if signal.name not in s.state_control_signals:
+                            s.state_control_signals.append(signal.name)
                     else:
-                        if signal.name in state.control_signals:
-                            state.control_signals.remove(signal.name)
-            #print(state.name, state.control_signals)
+                        if signal.name in s.control_signals:
+                            s.state_control_signals.remove(signal.name)
+            print(s.name, s.state_control_signals)
 
 class View():
     def __init__(self, model, screen): #View contains model and screen
@@ -118,7 +119,7 @@ class View():
             this_droppy = state
             screen.sub(this_droppy)
             # print ("Made a drop zone!")     
-        for control in self.model.control_signals:
+        for control in self.model.all_control_signals:
             this_draggy = control
             screen.sub(this_draggy)                       
             # print("Made a draggable")
