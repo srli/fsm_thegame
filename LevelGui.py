@@ -51,7 +51,7 @@ class Toolbar(planes.Plane):
         self.YPos = rect.y
         self.image.fill((0,0,255))
 
-        self.visible = True
+        self.visible = False
 
         self.transitions = transitions
         self.controls = controls
@@ -60,16 +60,17 @@ class Toolbar(planes.Plane):
         print (plane.rect.centerx, plane.rect.centery)
         planes.Plane.dropped_upon(self, plane, (plane.rect.centerx, plane.rect.centery))
 
-class Button(Button):
-    def __init__(self, label, rect, model):
-        Button.__init__(self, label, rect, model)
+class SwitchButton(Button):
+    def __init__(self, label, rect, callback, model):
+        Button.__init__(self, label, rect, callback, model)
+        self.model = model
         self.image.fill((0,0,255))
     def clicked(self, button_name):
         toolbar = self.model.toolbars[0]
         if toolbar.visible == True:
             toolbar.visible = False
         else:
-            toolbar.visible = True  
+            toolbar.visible = True
        
 
 class Drop_Display(planes.Display):
@@ -114,6 +115,9 @@ class Model():
         for state in self.states:
             pass
 
+    def make_Button(self, label, rect):
+        self.buttons.append(SwitchButton("Button", pygame.Rect(800,0,100,100), SwitchButton.clicked, self))
+
 class View():
     def __init__(self, model, screen): #View contains model and screen
         self.model = model
@@ -128,7 +132,6 @@ class View():
                 for c in self.model.control_enables:
                     screen.sub(c)
                 for e in self.model.transition_conditions:
-                    print type(e)
                     screen.sub(e)
                     print ("Made a transition")
                 print ("Made a toolbar!")
@@ -149,6 +152,10 @@ class View():
             this_droppy = droppy
             screen.sub(this_droppy)
             print ("Made a drop zone!")
+
+        for b in self.model.buttons:
+            screen.sub(b)
+            print("Made a button!")
               
         # for draggy in self.model.control_enables:
         #     this_draggy = draggy
@@ -173,7 +180,9 @@ if __name__ == "__main__":
 
     rect = pygame.Rect(0, 500, 800, 300)
     print type(rect)
-    model.make_Toolbar("tool1", rect, ["trans1", "trans2"], [])   
+    model.make_Toolbar("tool1", rect, ["trans1", "trans2"], [])
+    
+    model.make_Button("button", rect)   
     
     
     #Just to test if materials work
