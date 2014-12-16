@@ -30,7 +30,7 @@ class Button(gui.Button):
 	def __init__(self, label, rect, callback, model):
 		gui.Button.__init__(self, label, rect, callback)
 		planes.Plane.__init__(self,label,rect,draggable=False, grab=False)
-		self.image.fill(WHITE)
+		#self.image.fill(WHITE)
 		self.rect = rect
 		self.model = model
 	def update(self):
