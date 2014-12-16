@@ -59,7 +59,7 @@ class State(Drop):
     def __init__(self, name, rect, transitions=None, control_signals=[], next_state=None):
         Drop.__init__(self, name, rect, draggable=False, grab=True)
         self.transitions = transitions
-        self.control_signals = control_signals
+        self.state_control_signals = control_signals
 
  
 class Transition(Drag):
@@ -85,7 +85,7 @@ class Drop_Display(planes.Display):
 
 class Model():
     def __init__(self, current_state=None):
-        self.control_signals = []
+        self.all_control_signals = []
         self.states = []
         self.current_state = current_state
 
@@ -97,15 +97,16 @@ class Model():
 
     def update_states(self):
         for state in self.states:
-            for signal in self.control_signals:
-                if state.Xpos <= signal.Xpos <= state.Xpos+state.width or state.Xpos <= signal.Xpos+signal.width <= state.Xpos+state.width:
-                    if state.Ypos <= signal.Ypos <= state.Ypos+state.height or state.Ypos <= signal.Ypos+signal.height <= state.Ypos+height:
+            print state.name
+            for signal in self.all_control_signals:
+                if (state.Xpos <= signal.Xpos <= state.Xpos+state.width) or (state.Xpos <= signal.Xpos+signal.width <= state.Xpos+state.width):
+                    if (state.Ypos <= signal.Ypos <= state.Ypos+state.height) or (state.Ypos <= signal.Ypos+signal.height <= state.Ypos+height):
                         if signal.name not in state.control_signals:
                             state.control_signals.append(signal.name)
                     else:
                         if signal.name in state.control_signals:
                             state.control_signals.remove(signal.name)
-            print(state.name, state.control_signals)
+            #print(state.name, state.control_signals)
 
 class View():
     def __init__(self, model, screen): #View contains model and screen
