@@ -57,8 +57,7 @@ class Enable:
         self.rect = rect
         self.is_dragging = False
  
-
-       
+      
 class State_drop:
     def __init__(self, name, rect):
         self.name = name
@@ -98,7 +97,7 @@ class Model:      #game encoded in model, view, controller format
         #self.current_background = backgrounds[background_pointer]
         
         self.build_drag_objects(0) #builds first screen immediately
-        self.build_drop_zones(0)
+        #self.build_drop_zones(0)
         
     def build_drag_objects(self, level_num):
         """Looks at the objects imported from the world python script and builds
