@@ -16,10 +16,7 @@ class Drag(planes.Plane):
         planes.Plane.__init__(self, name, rect, draggable, grab)
         self.name = name
         self.image.fill((255, 0, 0))
-        self.Xpos = rect.x
-        self.Ypos = rect.y
-        self.height = rect.height
-        self.width = rect.width
+        self.rect = rect
 
     def clicked(self, button_name):
         self.image.fill((255,0,0))
@@ -31,11 +28,7 @@ class Drop(planes.Plane):
         self.name = name
         #print ("made drop Zone with x position", self.Xpos)
 
-        self.Xpos = rect.x
-        self.Ypos = rect.y
-        self.height = rect.height
-        self.width = rect.width
-        
+        self.rect = rect        
         self.image.fill((0,0,255))
     
     def dropped_upon(self, plane, coordinates):
@@ -47,8 +40,8 @@ class Drop(planes.Plane):
         """ 
         updates the model position for a drag object or drag object child whenever it's dropped on a drop object or drop object child
         """
-        plane.Xpos = coordinates[0]+self.Xpos
-        plane.Ypos = coordinates[1]+self.Ypos
+        plane.rect.x = coordinates[0]+self.rect.x
+        plane.rect.y = coordinates[1]+self.rect.y
         # print(plane.name, plane.Xpos, plane.Ypos)
 
 
@@ -95,19 +88,20 @@ class Model():
     def make_state(self, name, rect):
         self.states.append(State(name, rect))
 
-    def update_states(self):
-        for s in self.states:
-            # print s.name
-            for signal in self.all_control_signals:
-                if (s.Xpos <= signal.Xpos <= s.Xpos+s.width) or (s.Xpos <= signal.Xpos+signal.width <= s.Xpos+s.width):
-                    print(signal.Xpos, signal.Ypos)
-                    if (s.Ypos <= signal.Ypos <= s.Ypos+s.height) or (s.Ypos <= signal.Ypos+signal.height <= s.Ypos+height):
-                        if signal.name not in s.state_control_signals:
-                            s.state_control_signals.append(signal.name)
-                    else:
-                        if signal.name in s.control_signals:
-                            s.state_control_signals.remove(signal.name)
-            print(s.name, s.state_control_signals)
+    # def update_states(self):
+    #     for s in self.states:
+    #         # print s.name
+    #         print(s.Xpos, s.Ypos)
+    #         for signal in self.all_control_signals:
+    #             if (s.Xpos <= signal.Xpos <= s.Xpos+s.width) or (s.Xpos <= signal.Xpos+signal.width <= s.Xpos+s.width):
+    #                 print(s.Xpos, signal.Xpos, s.Xpos+s.width)
+    #                 if (s.Ypos <= signal.Ypos <= s.Ypos+s.height) or (s.Ypos <= signal.Ypos+signal.height <= s.Ypos+s.height):
+    #                     if signal.name not in s.state_control_signals:
+    #                         s.state_control_signals.append(signal.name)
+    #                 else:
+    #                     if signal.name in s.control_signals:
+    #                         s.state_control_signals.remove(signal.name)
+    #         print(s.name, s.state_control_signals)
 
 class View():
     def __init__(self, model, screen): #View contains model and screen
@@ -151,7 +145,7 @@ if __name__ == "__main__":
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
-        model.update_states()
+        # model.update_states()
         screen.process(events)
         screen.render()
         pygame.display.flip()
