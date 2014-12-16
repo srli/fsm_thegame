@@ -16,11 +16,7 @@ class Drag(planes.Plane):
         planes.Plane.__init__(self, name, rect, draggable, grab)
         self.name = name
         self.image.fill((255, 0, 0))
-        self.Xpos = rect.x
-        self.Ypos = rect.y
         self.rect = rect
-        self.height = rect.height
-        self.width = rect.width
 
     def clicked(self, button_name):
         self.image.fill((255,0,0))
@@ -32,11 +28,7 @@ class Drop(planes.Plane):
         self.name = name
         #print ("made drop Zone with x position", self.Xpos)
 
-        self.Xpos = rect.x
-        self.Ypos = rect.y
-        self.height = rect.height
-        self.width = rect.width
-        
+        self.rect = rect        
         self.image.fill((0,0,255))
     
     def dropped_upon(self, plane, coordinates):
@@ -48,8 +40,8 @@ class Drop(planes.Plane):
         """ 
         updates the model position for a drag object or drag object child whenever it's dropped on a drop object or drop object child
         """
-        plane.Xpos = coordinates[0]+self.Xpos
-        plane.Ypos = coordinates[1]+self.Ypos
+        plane.rect.x = coordinates[0]+self.rect.x
+        plane.rect.y = coordinates[1]+self.rect.y
         # print(plane.name, plane.Xpos, plane.Ypos)
 
 
@@ -149,7 +141,7 @@ if __name__ == "__main__":
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
-        model.update_states()
+        # model.update_states()
         screen.process(events)
         screen.render()
         pygame.display.flip()
