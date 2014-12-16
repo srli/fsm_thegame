@@ -18,6 +18,7 @@ class Drag(planes.Plane):
         self.image.fill((255, 0, 0))
         self.Xpos = rect.x
         self.Ypos = rect.y
+        self.rect = rect
         self.height = rect.height
         self.width = rect.width
 
@@ -60,7 +61,7 @@ class State(Drop):
         Drop.__init__(self, name, rect, draggable=False, grab=True)
         self.transitions = transitions
         self.state_control_signals = control_signals
-
+        self.rect = rect
  
 class Transition(Drag):
     """
@@ -99,13 +100,10 @@ class Model():
         for s in self.states:
             # print s.name
             for signal in self.all_control_signals:
-                if (s.Xpos <= signal.Xpos <= s.Xpos+s.width) or (s.Xpos <= signal.Xpos+signal.width <= s.Xpos+s.width):
-                    print(signal.Xpos, signal.Ypos)
-                    if (s.Ypos <= signal.Ypos <= s.Ypos+s.height) or (s.Ypos <= signal.Ypos+signal.height <= s.Ypos+height):
-                        if signal.name not in s.state_control_signals:
+                if s.rect.contains(signal.rect):
+                    if signal.name not in s.state_control_signals:
                             s.state_control_signals.append(signal.name)
-                    else:
-                        if signal.name in s.control_signals:
+                    elif signal.name in s.state_control_signals:
                             s.state_control_signals.remove(signal.name)
             print(s.name, s.state_control_signals)
 
