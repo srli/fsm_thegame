@@ -91,13 +91,18 @@ class Model:      #game encoded in model, view, controller format
         self.enables_drop_zones = []
         
         self.start_button = pygame.Rect((550, 500), (50,30))
-        self.beginning_simulation = False
+        self.end_button = pygame.Rect((700, 700), (50,30))
+        
+        self.begin_linking = False
+        self.begin_simulation = False
         #self.backgrounds = [] #FILL THIS IN LATER
         #self.current_state = states[state_pointer]
         #self.current_background = backgrounds[background_pointer]
         
         self.build_drag_objects(0) #builds first screen immediately
         self.build_drop_zones(0)
+        
+        self.temperature = 80
         
     def build_drag_objects(self, level_num):
         """Looks at the objects imported from the world python script and builds
@@ -199,11 +204,26 @@ class Model:      #game encoded in model, view, controller format
             j += 1 
         print self.states[0].name, self.states[0].enables, self.states[0].transition_check, self.states[0].transition_conditions   
    
+    def simulation(self):
+        current_state = self.states[self.state_pointer]
+        heater = current_state.enables[0]
+        print heater
+        if heater:
+            self.temperature += 3
+        elif heater == 0:
+            self.temperature -= 3
+        self.state_pointer = current_state.check_transition(self.temperature)
+        print "temperature is ", self.temperature
+        print current_state.name
+
     def update(self):
         """updates based on inputs from the controller"""
-        if self.beginning_simulation:
+        if self.begin_linking:
             self.link_states()
-            self.beginning_simulation = False
+            self.begin_linking = False
+            self.begin_simulation = True
+        if self.begin_simulation:
+            self.simulation()
         
 class View:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
@@ -232,6 +252,7 @@ class View:
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
         pygame.draw.rect(screen, pygame.Color(244,244,120), self.model.start_button)
+        pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
         pygame.display.update() #Pygame call to update full display
 
 
@@ -256,9 +277,11 @@ class Controller:
     
     def check_buttons(self):
         if self.model.start_button.collidepoint((mouseX, mouseY)):
-            self.model.beginning_simulation = True            
+            self.model.begin_linking = True            
             print "starting!"
-            
+        elif self.model.end_button.collidepoint((mouseX, mouseY)):
+            self.model.begin_simulation = False            
+            print "starting!"
     
     def un_drag(self):        
         element = self.all_rects[self.drag_index]
