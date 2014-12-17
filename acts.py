@@ -21,26 +21,30 @@ class State:
         self.enables = []
         
     def check_transition(self, transition):
+        print "in check transition"
         i = 0
+        print self.transition_check[i]
         while i < len(self.transition_conditions):
-            if self.transition_check == ">":
+            if self.transition_check[i] == ">":
                 if transition > self.transition_conditions[i]:
-                     return self.next_states[i]
+                    return self.next_states[i]
                 else:
                     return self.current_index
-            elif self.transition_check == "<":
+            elif self.transition_check[i] == "<":
+                print "less than"
                 if transition < self.transition_conditions[i]:
-                     return self.next_states[i]
+                    print "returning next states", self.next_states[i]
+                    return self.next_states[i]
                 else:
                     return self.current_index
-            elif self.transition_check == "range":
+            elif self.transition_check[i] == "range":
                 if transition > self.transition_conditions[i] and transition < self.transition_conditions[i+1]:
                     return self.next_states[i]
                 else:
                     return self.current_index
             else:
-                return self.current_index
                 print "Check transition condition of state", self.name
+                return self.current_index
             i += 1
             
 class Transition:
@@ -99,8 +103,8 @@ class Model:      #game encoded in model, view, controller format
         #self.current_state = states[state_pointer]
         #self.current_background = backgrounds[background_pointer]
         
-        self.build_drag_objects(0) #builds first screen immediately
-        self.build_drop_zones(0)
+        self.build_drag_objects(self.level) #builds first screen immediately
+        self.build_drop_zones(self.level)
         
         self.temperature = 80
         
@@ -198,7 +202,7 @@ class Model:      #game encoded in model, view, controller format
                     index += 1 
         h = 0
         while h < len(self.states):
-            self.states[h].next_states.append(h%len(self.states))
+            self.states[h].next_states.append((h+1)%len(self.states))
             h += 1
                     
         i = 0
@@ -223,9 +227,9 @@ class Model:      #game encoded in model, view, controller format
         current_state = self.states[self.state_pointer]
         heater = current_state.enables[0]
         print heater
-        if heater:
+        if "on" in heater:
             self.temperature += 3
-        elif heater == 0:
+        elif "off" in heater:
             self.temperature -= 3
         self.state_pointer = current_state.check_transition(self.temperature)
         print "temperature is ", self.temperature
