@@ -202,8 +202,8 @@ class Model:      #game encoded in model, view, controller format
         """
         takes in a list of objects that need to move and where they should be placed and moves them there 
         """
-        from_list = all_levels[level].from_list
-        to_list = all_levels[level].to_list
+        from_list = all_levels[level][0].from_list
+        to_list = all_levels[level][0].to_list
 
         for state in self.states:
             if state.name in from_list:
