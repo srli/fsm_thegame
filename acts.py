@@ -144,8 +144,7 @@ class Model:      #game encoded in model, view, controller format
                         self.states.append(State(self.states_names[i],pygame.Rect(x,y, 60,60)))
                         i += 1
                 elif col == "T":
-                    if j < len(self.transitions_names):
-                        
+                    if j < len(self.transitions_names):             
                         self.transitions.append(Transition(self.transitions_names[j][0], 
                                                            self.transitions_names[j][1],self.transitions_names[j][2], pygame.Rect(x,y, 60,60)))
                         j += 1
@@ -384,7 +383,11 @@ class View:
             pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
             self.screen.blit(self.create_font(None).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
         for state in self.model.states: #Draws each wall block
-            pygame.draw.rect(screen, pygame.Color(255, 125, 255), state.rect)
+            if state.glow:
+                color = pygame.Color(255,0,255)
+            else:
+                color = pygame.Color(255,125,255)
+            pygame.draw.rect(screen, color, state.rect)
             self.screen.blit(self.create_font(state.rect).render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y+0.25*state.rect.height))
         for transition in self.model.transitions: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 155), transition.rect)
