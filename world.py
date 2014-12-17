@@ -34,7 +34,7 @@ class Level:
 #act2 = Level(["day", "night"], ["hot", "cold"], ["heater on", "heater off"], [1,2,3])
 
 
-test = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
-
+two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
+three_states = Level(["too bright", "just right", "too dim"], ["bright to right"])
 all_levels = [test]
 print all_levels[0].states

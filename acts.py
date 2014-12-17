@@ -116,8 +116,8 @@ class Model:      #game encoded in model, view, controller format
         
         layout = ["SSSXEEXX",
                   "SSSXEEXX",
-                  "TTTXXXXX",
-                  "TTTXXXXX"] #each block has width 100px, height 75
+                  "TTTXEEXX",
+                  "TTTXXXXX"] #each block has width 100px, height 75                
         x = 50
         y = 500
         i = j = k = 0
@@ -146,32 +146,47 @@ class Model:      #game encoded in model, view, controller format
         self.states_names = current_level.states
         self.transitions_names = current_level.transitions
         self.enables_names = current_level.enables        
-        
-        layout = ["XXTXXXTXXXTXXXTXX",
-                  "SXTXSXTXSXTXSXTXS",
-                  "EXXXEXXXEXXXEXXXE"]
-                  
+       
+#        layout = ["XXTXXXTXXXTXXXTXX",
+#                  "SXTXSXTXSXTXSXTXS",
+#                  "EXXXEXXXEXXXEXXXE"]                 
+  
+        layout = ["XSE",
+                  "XXX",
+                  "TTX",
+                  "XXX",
+                  "XSE",
+                  "XXX",
+                  "TTX",
+                  "XXX",
+                  "XSE",
+                  "XXX",
+                  "TTX",
+                  "XXX",
+                  "XSE"]
+
+               
         x_width = 700/(3*len(self.transitions_names))
         x = 50
         y = 50
         i = j = k = 0
-        for row in layout:
-            for col in row:
-                if col == "S":
+        for col in layout:
+            for row in col:
+                if row == "S":
                     if i < len(self.states_names):
                         self.states_drop_zones.append(State_drop(self.states_names[i], pygame.Rect(x,y,100,100)))
                         i += 1
-                elif col == "T":
+                elif row == "T":
                     if j < len(self.transitions_names):
                         self.transitions_drop_zones.append(Transition_drop(self.transitions_names[j][0], pygame.Rect(x,y,100,70)))
                         j += 1
-                elif col == "E":
+                elif row == "E":
                     if k < len(self.enables_names):
                         self.enables_drop_zones.append(Enable_drop(self.enables_names[k], pygame.Rect(x+10,y+10,80,80)))
                         k += 1
-                x += x_width #Traverses each column in the world file
-            y += 100 #Goes to the next row
-            x = 50 #Restarts at the first column
+                y += 100#Traverses each column in the world file
+            y = 50 #Goes to the next row
+            x += x_width #Restarts at the first column
 
     def link_states(self):
         print "linking states"
