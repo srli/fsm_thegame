@@ -370,6 +370,18 @@ class View:
         #     origin = state.rect.center
 
 
+        for s in range(len(self.model.states_drop_zones)-1):
+            state_now = self.model.states_drop_zones[s]
+            state_next = self.model.states_drop_zones[s+1]
+
+            origin = state_now.rect.topright
+            endx = (state_now.rect.x + state_next.rect.x)/2 
+            endy = state_now.rect.y-100
+
+            pygame.draw.line(self.screen, (255, 255, 255), origin, (endx, endy))
+            pygame.draw.line(self.screen, (255, 255, 255), (endx+127, endy), state_next.rect.topleft)
+            pygame.draw.line(self.screen, (255, 255, 255), state_next.rect.midleft, state_now.rect.midright)
+
 
 
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
@@ -461,7 +473,7 @@ if __name__ == '__main__':
         controller.update()
         model.update()
         if model.level == 0:
-            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png"]
+            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png", "StateIntro.png", "ControlIntro.png", "TransitionsIntro.png"]
             #for b in range(len(backgrounds)):
             b = 0
             while b < len(backgrounds):
