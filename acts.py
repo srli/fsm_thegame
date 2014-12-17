@@ -83,7 +83,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 1
+        self.level = 0
         self.state_pointer = 0
         self.background_pointer = 0       
        
@@ -412,24 +412,27 @@ class View:
         alldroppys = self.model.states_drop_zones + self.model.enables_drop_zones
         
         for droppy in alldroppys:
-            pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
-            self.screen.blit(self.create_font(droppy.rect).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
+            pygame.draw.rect(screen, pygame.Color(120, 120, 120), droppy.rect)
+            self.screen.blit(self.create_font(droppy.rect).render(droppy.name, True, (255,255,255)), (droppy.rect.x + 2, droppy.rect.y+0.25*droppy.rect.height))
+        
         for droppy in self.model.transitions_drop_zones:
-            pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
-            self.screen.blit(self.create_font(None).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
+            pygame.draw.rect(screen, pygame.Color(120, 120, 120), droppy.rect)
+            self.screen.blit(self.create_font(None).render(droppy.name, True, (255,255,255)), (droppy.rect.x + 2, droppy.rect.y+0.25*droppy.rect.height))
+        
+
         for state in self.model.states: #Draws each wall block
             if state.glow:
                 color = pygame.Color(255,0,0)
             else:
-                color = pygame.Color(255,125,255)
+                color = pygame.Color(45,131,238)
             pygame.draw.rect(screen, color, state.rect)
-            self.screen.blit(self.create_font(state.rect).render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y+0.25*state.rect.height))
+            self.screen.blit(self.create_font(state.rect).render(state.name, True, (255,255,255)), (state.rect.x + 2, state.rect.y+0.25*state.rect.height))
         for transition in self.model.transitions: #Draws each wall block
-            pygame.draw.rect(screen, pygame.Color(255, 255, 155), transition.rect)
-            self.screen.blit(self.create_font(transition.rect).render(transition.name, True, (255,0,0)), (transition.rect.x, transition.rect.y+0.25*transition.rect.height))
+            pygame.draw.rect(screen, pygame.Color(109, 190, 69), transition.rect)
+            self.screen.blit(self.create_font(transition.rect).render(transition.name, True, (255,255,255)), (transition.rect.x + 2, transition.rect.y+0.25*transition.rect.height))
         for enable in self.model.enables: #Draws each wall block
-            pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
-            self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
+            pygame.draw.rect(screen, pygame.Color(238, 45, 45), enable.rect)
+            self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,255,255)), (enable.rect.x + 2, enable.rect.y+0.25*enable.rect.height))
         # for state in self.model.states:
         #     origin = state.rect.center
 
@@ -491,9 +494,9 @@ class View:
 
     def draw_console(self):
         fontt = pygame.font.SysFont('Arial', 20)
-        self.screen.blit(fontt.render("Drag elements to their correct spaces", True, (255,0,0)), (50,460))
+        self.screen.blit(fontt.render("Drag elements to their correct spaces", True, (255,255,255)), (50,460))
         #self.screen.blit(fontt.render("Current state is "+str(self.model.current_state.name), True, (255,0,0)), (525,525))        
-        self.screen.blit(fontt.render("Current "+str(self.model.condition_name) + " is "+str(self.model.condition), True, (255,0,0)), (525,575))
+        self.screen.blit(fontt.render("Current "+str(self.model.condition_name) + " is "+str(self.model.condition), True, (255,255,255)), (525,575))
         
 class Controller:
     """ Manipulate game state based on keyboard input, the controller part of our model, view, controller"""
@@ -563,7 +566,7 @@ if __name__ == '__main__':
         controller.update()
         model.update()
         if model.level == 0:
-            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png", "StateIntro.png", "ControlIntro.png", "TransitionsIntro.png"]
+            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png", "StateIntro.png", "ControlIntro.png", "TransitionsIntro.png", "Level1Exp.png", "Level1Exp2.png", "Level1Exp3.png", "Level1Exp4.png"]
             #for b in range(len(backgrounds)):
             b = 0
             while b < len(backgrounds):
@@ -575,9 +578,20 @@ if __name__ == '__main__':
             model.level += 1
         elif model.win_condition:
             model.level += 1
+            if model.level == 2:
+                backgrounds = ["Level2Trans.png", "Level2Exp.png"]
+            b = 0
+            while b < len(backgrounds):
+                view.draw_introl(backgrounds[b])
+                for event in pygame.event.get():
+                    if event.type == MOUSEBUTTONDOWN:
+                        print "CLICK!"
+                        b = b+1
             model.reset()
             model.build_drag_objects(model.level) #builds first screen immediately
             model.build_drop_zones(model.level)
+            view = View(model,screen)
+            controller = Controller(model)
         
         
         else:
