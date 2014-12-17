@@ -395,6 +395,25 @@ class View:
         # for state in self.model.states:
         #     origin = state.rect.center
 
+
+        for s in range(len(self.model.states_drop_zones)-1):
+            now = self.model.states_drop_zones[s]
+            next = self.model.states_drop_zones[s+1]
+
+            origin = now.rect.topright
+            endx = (now.rect.x + next.rect.x)/2 
+            endy = now.rect.y-100
+
+            pygame.draw.line(self.screen, (255, 255, 255), origin, (endx, endy+40))
+            pygame.draw.line(self.screen, (255, 255, 255), (endx+130, endy+40), next.rect.topleft)
+            pygame.draw.line(self.screen, (255, 255, 255), next.rect.midleft, now.rect.midright)
+
+            if s == 1:
+                pygame.draw.line(self.screen, (255, 255, 255), next.rect.bottomleft, ((next.rect.x + 0.5*(now.rect.x - next.rect.x)), next.rect.y+125))
+                #pygame.draw.line(self.screen, (255, 255, 255), (endx+127, endy), nex
+
+
+
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
         pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
@@ -484,7 +503,7 @@ if __name__ == '__main__':
         controller.update()
         model.update()
         if model.level == 0:
-            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png"]
+            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png", "StateIntro.png", "ControlIntro.png", "TransitionsIntro.png"]
             #for b in range(len(backgrounds)):
             b = 0
             while b < len(backgrounds):
