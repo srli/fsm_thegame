@@ -81,7 +81,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 1
+        self.level = 2
         self.state_pointer = 0
         self.background_pointer = 0       
        
@@ -375,16 +375,20 @@ class View:
 
 
         for s in range(len(self.model.states_drop_zones)-1):
-            state_now = self.model.states_drop_zones[s]
-            state_next = self.model.states_drop_zones[s+1]
+            now = self.model.states_drop_zones[s]
+            next = self.model.states_drop_zones[s+1]
 
-            origin = state_now.rect.topright
-            endx = (state_now.rect.x + state_next.rect.x)/2 
-            endy = state_now.rect.y-100
+            origin = now.rect.topright
+            endx = (now.rect.x + next.rect.x)/2 
+            endy = now.rect.y-100
 
-            pygame.draw.line(self.screen, (255, 255, 255), origin, (endx, endy))
-            pygame.draw.line(self.screen, (255, 255, 255), (endx+127, endy), state_next.rect.topleft)
-            pygame.draw.line(self.screen, (255, 255, 255), state_next.rect.midleft, state_now.rect.midright)
+            pygame.draw.line(self.screen, (255, 255, 255), origin, (endx, endy+40))
+            pygame.draw.line(self.screen, (255, 255, 255), (endx+130, endy+40), next.rect.topleft)
+            pygame.draw.line(self.screen, (255, 255, 255), next.rect.midleft, now.rect.midright)
+
+            if s == 1:
+                pygame.draw.line(self.screen, (255, 255, 255), next.rect.bottomleft, ((next.rect.x + 0.5*(now.rect.x - next.rect.x)), next.rect.y+125))
+                #pygame.draw.line(self.screen, (255, 255, 255), (endx+127, endy), nex
 
 
 
