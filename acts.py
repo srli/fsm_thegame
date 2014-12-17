@@ -78,7 +78,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 2
+        self.level = 1
         self.state_pointer = 0
         self.background_pointer = 0       
        
@@ -235,6 +235,7 @@ class Model:      #game encoded in model, view, controller format
     def link_states(self):
         print "linking states"
         index = 0
+        greater2 = False
         for state_drop in self.states_drop_zones: #indexes all the states properly
             for state_drag in self.states:
                 if state_drop.rect.contains(state_drag.rect):
@@ -247,21 +248,26 @@ class Model:      #game encoded in model, view, controller format
             
         t_first = self.transitions_drop_zones[0]
         self.transitions_drop_zones.remove(self.transitions_drop_zones[0])
-        t_second_last = self.transitions_drop_zones[-2]
-        self.transitions_drop_zones.remove(self.transitions_drop_zones[-2])
+
         t_last = self.transitions_drop_zones[-1]
         self.transitions_drop_zones.remove(self.transitions_drop_zones[-1])
+        
+        if len(self.transitions_drop_zones) > 2:
+            greater2 = True
+            t_second_last = self.transitions_drop_zones[-2]
+            self.transitions_drop_zones.remove(self.transitions_drop_zones[-2])
         
         for transition_drag in self.transitions:
             if t_first.rect.contains(transition_drag.rect):
                 self.states[0].transition_check.append(transition_drag.transition_check_type)
                 self.states[0].transition_conditions.append(transition_drag.value)
-            if t_second_last.rect.contains(transition_drag.rect):
-                self.states[-1].transition_check.append(transition_drag.transition_check_type)
-                self.states[-1].transition_conditions.append(transition_drag.value)
             if t_last.rect.contains(transition_drag.rect):
                 self.states[-1].transition_check.append(transition_drag.transition_check_type)
                 self.states[-1].transition_conditions.append(transition_drag.value)
+            if greater2:                
+                if t_second_last.rect.contains(transition_drag.rect):
+                    self.states[-1].transition_check.append(transition_drag.transition_check_type)
+                    self.states[-1].transition_conditions.append(transition_drag.value)
             
         i = 0
         while i < len(self.transitions_drop_zones): #name, transition check, transition conditions
