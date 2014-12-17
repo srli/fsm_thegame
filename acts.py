@@ -351,6 +351,30 @@ class View:
         pygame.draw.rect(screen, pygame.Color(50,50,50), pygame.Rect((0, 450), (800, 450)))
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
 
+        for s in range(len(self.model.states_drop_zones)-1):
+            now = self.model.states_drop_zones[s]
+            next = self.model.states_drop_zones[s+1]
+
+            origin = now.rect.topright
+            endx = (now.rect.x + next.rect.x)/2 
+            endy = now.rect.y-100
+
+            self.draw_arrow(origin, (endx, endy+40), "end", "up", "right")
+            self.draw_arrow((endx+130, endy+40), next.rect.topleft, "end", "down", "right")
+
+            #pygame.draw.line(self.screen, (255, 255, 255), (endx+130, endy+40), next.rect.topleft)
+            self.draw_arrow(next.rect.midleft, now.rect.midright, "end", "straight" , "right")
+            #pygame.draw.line(self.screen, (255, 255, 255), next.rect.midleft, now.rect.midright)
+
+            if s == 1:
+                first = self.model.states_drop_zones[0]
+                self.draw_arrow(next.rect.bottomleft, ((next.rect.x + 0.25*(now.rect.x - next.rect.x)), next.rect.y+200), "end", "down", "left")
+                #pygame.draw.line(self.screen, (255, 255, 255), next.rect.bottomleft, ((next.rect.x + 0.25*(now.rect.x - next.rect.x)), next.rect.y+200))
+                #pygame.draw.line(self.screen, (255, 255, 255), (endx+127, endy), nex
+                self.draw_arrow(first.rect.bottomright, ((next.rect.x + 0.25*(first.rect.x - next.rect.x)), next.rect.y+200), "start", "up", "right")
+                #pygame.draw.line(self.screen, (255, 255, 255), first.rect.bottomright, ((next.rect.x + 0.25*(first.rect.x - next.rect.x)), next.rect.y+200))
+
+
         alldroppys = self.model.states_drop_zones + self.model.enables_drop_zones
         
         for droppy in alldroppys:
@@ -376,30 +400,52 @@ class View:
         #     origin = state.rect.center
 
 
-        for s in range(len(self.model.states_drop_zones)-1):
-            now = self.model.states_drop_zones[s]
-            next = self.model.states_drop_zones[s+1]
-
-            origin = now.rect.topright
-            endx = (now.rect.x + next.rect.x)/2 
-            endy = now.rect.y-100
-
-            pygame.draw.line(self.screen, (255, 255, 255), origin, (endx, endy+40))
-            pygame.draw.line(self.screen, (255, 255, 255), (endx+130, endy+40), next.rect.topleft)
-            pygame.draw.line(self.screen, (255, 255, 255), next.rect.midleft, now.rect.midright)
-
-            if s == 1:
-                pygame.draw.line(self.screen, (255, 255, 255), next.rect.bottomleft, ((next.rect.x + 0.25*(now.rect.x - next.rect.x)), next.rect.y+200))
-                #pygame.draw.line(self.screen, (255, 255, 255), (endx+127, endy), nex
-                pygame.draw.line(self.screen, (255, 255, 255), now.rect.bottomright, ((next.rect.x + 0.25*(now.rect.x - next.rect.x)), next.rect.y+200))
-
-
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
         pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
         self.draw_console()        
         pygame.display.update() #Pygame call to update full display
 
+
+    def draw_arrow(self, start, end, begin, facing, dir):
+        width = 3
+        pygame.draw.line(self.screen, (109, 190, 69), start, end, width)
+        if begin == "end":
+            if facing == "up":
+                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-25, end[1]+5), width)
+                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-2, end[1]+20), width)
+            elif facing == "down":
+                if dir == "right":
+                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-25, end[1]-5), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+3, end[1]-20), width)
+                else:
+                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+30, end[1]-15), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-5, end[1]-25), width)
+
+            else:
+                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+25, end[1]+13), width)
+                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+25, end[1]-13), width)
+
+        if begin == "start":
+            if facing == "up":
+                if dir == "right":
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]+25, start[1]-10), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]+5, start[1]+25), width)
+                else:
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]+25, start[1]+5), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]-2, start[1]+20), width)
+
+            elif facing == "down":
+                if dir == right:
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]-25, start[1]-5), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]+3, start[1]-20), width)
+                else:
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]-25, start[1]-5), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]+3, start[1]-20), width)
+
+            else:
+                pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]+25, start[1]+13), width)
+                pygame.draw.line(self.screen, (109, 190, 69), start, (start[0]+25, start[1]-13), width)
     
 
     def draw_introl(self, image):
