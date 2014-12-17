@@ -247,6 +247,14 @@ class View:
         self.model = model
         self.screen = screen
     
+    def create_font(self, rect):
+        """
+        Changes the font size based on the size of the box we are adding the label to
+        """
+        size = rect.width/4 -2
+        return pygame.font.SysFont('Arial', size)
+
+
     def draw(self):
         """Draws updated view every 0.001 seconds, or as defined by sleep at end of main loop
         Does not do any updating on its own, takes model objects and displays        
@@ -255,22 +263,20 @@ class View:
         pygame.draw.line(self.screen, (255,255,255), (0,450), (800,450))
         pygame.draw.line(self.screen, (255,255,255), (50,0), (50,800))
         pygame.draw.line(self.screen, (255,255,255), (750,0), (750,800))
-        self.font = pygame.font.SysFont('Arial', 25)
 
-        
         alldroppys = self.model.states_drop_zones + self.model.transitions_drop_zones + self.model.enables_drop_zones
         for droppy in alldroppys:
             pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
-            self.screen.blit(self.font.render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y))
+            self.screen.blit(self.create_font(droppy.rect).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
         for state in self.model.states: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 125, 255), state.rect)
-            self.screen.blit(self.font.render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y))
+            self.screen.blit(self.create_font(state.rect).render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y+0.25*state.rect.height))
         for transition in self.model.transitions: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 155), transition.rect)
-            self.screen.blit(self.font.render(transition.name, True, (255,0,0)), (transition.rect.x, transition.rect.y))
+            self.screen.blit(self.create_font(transition.rect).render(transition.name, True, (255,0,0)), (transition.rect.x, transition.rect.y+0.25*transition.rect.height))
         for enable in self.model.enables: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
-            self.screen.blit(self.font.render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y))
+            self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
         pygame.draw.rect(screen, pygame.Color(244,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
