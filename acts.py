@@ -108,8 +108,8 @@ class Model:      #game encoded in model, view, controller format
         self.init_conditions = []
         self.condition = 0        
 
-        self.build_drag_objects(self.level) #builds first screen immediately
-        self.build_drop_zones(self.level)
+        self.build_drag_objects() #builds first screen immediately
+        self.build_drop_zones()
         
         self.current_state = None
         #self.current_state = self.states[self.state_pointer]
@@ -134,13 +134,14 @@ class Model:      #game encoded in model, view, controller format
         self.start = 0
 
 
-    def build_drag_objects(self, level_num):
+    def build_drag_objects(self):
         """Looks at the objects imported from the world python script and builds
         """
-        current_level = all_levels[level_num][0]
+        print "current level is ", self.level
+        current_level = all_levels[self.level][0]
         self.states_names = current_level.states
-        self.condition_name = all_levels[level_num][1].name
-        self.init_conditions = all_levels[level_num][1].initial_values
+        self.condition_name = all_levels[self.level][1].name
+        self.init_conditions = all_levels[self.level][1].initial_values
         #print self.states_names
         #self.backgrounds = current_level.backgrounds
         self.transitions_names = current_level.transitions
@@ -173,11 +174,11 @@ class Model:      #game encoded in model, view, controller format
             x = 50 #Restarts at the first column
     
     
-    def build_drop_zones(self,level_num):
+    def build_drop_zones(self):
         toggle = False
         next_state_number = 1
               
-        current_level = all_levels[level_num][0]
+        current_level = all_levels[self.level][0]
         self.states_names = current_level.states
         self.transitions_names = current_level.transitions
         self.enables_names = current_level.enables        
@@ -230,38 +231,6 @@ class Model:      #game encoded in model, view, controller format
                 y += 100#Traverses each column in the world file
             y = 50 #Goes to the next row
             x += x_width #Restarts at the first column
-
-#    def init_predef(self, level):
-#        """
-#        takes in a list of objects that need to move and where they should be placed and moves them there 
-#        """
-#        from_list = all_levels[level][0].from_list
-#        to_list = all_levels[level][0].to_list
-#
-#        for state in self.states:
-#            if state.name in from_list:
-#                index = from_list.index(state.name)
-#                for state_drop in self.states_drop_zones:
-#                    if state_drop.name == to_list[index]:
-#                        state.rect.x = state_drop.rect.x + 10
-#                        state.rect.y = state_drop.rect.y + 10
-#
-#        for enable in self.enables:
-#            if enable.name in from_list:
-#                index = from_list.index(enable.name)
-#                for enable_drop in self.enables_drop_zones:
-#                    if enable_drop.name == to_list[index]:
-#                        enable.rect.x = enable_drop.rect.x + 10
-#                        enable.rect.y = enable_drop.rect.y + 10
-#
-#        for trans in self.transitions:
-#            if trans.name in from_list:
-#                index = from_list.index(trans.name)
-#                for trans_drop in self.transitions_drop_zones:
-#                    if trans_drop.name == to_list[index]:
-#                        trans.rect.x = trans_drop.rect.x + 10
-#                        trans.rect.y = trans_drop.rect.y + 10
-    
 
     def link_states(self):
         print "linking states"
@@ -318,9 +287,9 @@ class Model:      #game encoded in model, view, controller format
                 state.glow = False
         enable = self.current_state.enables[0]
         if "yes" in enable:
-            self.condition += 0.1
+            self.condition += 0.4
         elif "no" in enable:
-            self.condition -= 0.5
+            self.condition -= 0.4
         else:
             self.condition += 0.2
         self.state_pointer = self.current_state.check_transition(self.condition)
@@ -341,13 +310,15 @@ class Model:      #game encoded in model, view, controller format
 
     def check_win_conditions(self, time):
         if time > 10:
-            if self.level == 1 and 40 <= self.condition <= 70:
+            if self.level == 0 and 40 <= self.condition <= 70:
                 self.win_condition = True
                 self.begin_simulation = False
-            elif self.level == 2 and self.condition >= 60:
+            elif self.level == 1 and 40 <= self.condition <= 70:
                 self.win_condition = True
                 self.begin_simulation = False
-
+#            elif self.level == 2 and not ((self.condition < -55) and (self.condition > 110)):
+#                self.win_condition = True
+#                self.begin_simulation = False
 
         
 class View:
@@ -588,8 +559,8 @@ if __name__ == '__main__':
                         print "CLICK!"
                         b = b+1
             model.reset()
-            model.build_drag_objects(model.level) #builds first screen immediately
-            model.build_drop_zones(model.level)
+            model.build_drag_objects() #builds first screen immediately
+            model.build_drop_zones()
             view = View(model,screen)
             controller = Controller(model)
         

@@ -40,15 +40,15 @@ class Level:
 #act1 = Level(["day", "night"], ["hot", "cold"], ["heater on", "heater off"], [1,2,3])
 #act2 = Level(["day", "night"], ["hot", "cold"], ["heater on", "heater off"], [1,2,3])
 
-#intro = [Level(["too hot", "too cold"], [("High Temp",">",70), ("Low Temp", "<", 40)], ["heater yes", "heater no"], ["too hot", "too cold", "on to off", "off to on", "heater on", "heater off"], ["state0", "state1", "transition0", "transition1", "enable0", "enable1"]),Condition("intro",[0])]
+intro = [Level(["too hot", "too cold"], [("High Temp",">",70), ("Low Temp", "<", 40)], ["heater yes", "heater no"]), Condition("temperature",[0])]
 level1 = [Level(["too hot", "too cold"], [("High temp",">",70), ("Low Temp", "<", 40)], ["heater yes", "heater no"]), Condition("temperature",[80,20])]
-level2 = [Level(["peace", "Zerstoert", "reconstruction"],[("dragons appear","<", 50), ("reconstruction begins", ">", 60), ("peace acheived!", ">", 90), ("none1", "x", 100), ("none", "x", 100)], 
+level2 = [Level(["peace", "Zerstoert", "reconstruction"],[("dragons appear",">", 100), ("reconstruction begins", "<", -50), ("peace acheived!", ">", 90), ("none1", "x", 100), ("none", "x", 100)], 
                 ["workers no", "workers no", "workers yes"]), Condition("HP",[101])]
 
 # two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
 
-all_levels = [level1, level2]
-print all_levels[1][1].name
+all_levels = [intro, level1, level2]
+print all_levels[2][1].name
 
 #two_states = [Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"]), Condition("temperature",80)]
 # two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
