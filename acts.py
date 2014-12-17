@@ -14,6 +14,7 @@ class State:
         self.name = name
         self.current_index = 0
         self.rect = rect
+        self.glow = False
         self.is_dragging = False
         self.transition_check = []
         self.transition_conditions = []
@@ -23,24 +24,26 @@ class State:
     def check_transition(self, transition):
         i = 0
         while i < len(self.transition_conditions):
-            if self.transition_check == ">":
+            print self.transition_check[i]
+            print self.next_states[i]
+            if self.transition_check[i] == ">":
                 if transition > self.transition_conditions[i]:
-                     return self.next_states[i]
+                    return self.next_states[i]
                 else:
                     return self.current_index
-            elif self.transition_check == "<":
+            elif self.transition_check[i] == "<":
                 if transition < self.transition_conditions[i]:
-                     return self.next_states[i]
+                    return self.next_states[i]
                 else:
                     return self.current_index
-            elif self.transition_check == "range":
+            elif self.transition_check[i] == "range":
                 if transition > self.transition_conditions[i] and transition < self.transition_conditions[i+1]:
                     return self.next_states[i]
                 else:
                     return self.current_index
             else:
-                return self.current_index
                 print "Check transition condition of state", self.name
+                return self.current_index
             i += 1
             
 class Transition:
@@ -90,8 +93,8 @@ class Model:      #game encoded in model, view, controller format
         self.transitions_drop_zones = []
         self.enables_drop_zones = []
         
-        self.start_button = pygame.Rect((550, 500), (50,30))
-        self.end_button = pygame.Rect((700, 700), (50,30))
+        self.start_button = pygame.Rect((550, 475), (50,30))
+        self.end_button = pygame.Rect((700, 475), (50,30))
         
         self.begin_linking = False
         self.begin_simulation = False
@@ -99,12 +102,12 @@ class Model:      #game encoded in model, view, controller format
         #self.current_state = states[state_pointer]
         #self.current_background = backgrounds[background_pointer]
         
-        self.build_drag_objects(0) #builds first screen immediately
-        self.build_drop_zones(0)
-
-
         self.init_predef(self.level)
+
+        self.build_drag_objects(self.level) #builds first screen immediately
+        self.build_drop_zones(self.level)
         
+        self.current_state = self.states[self.state_pointer]
         self.temperature = 80
         
     def build_drag_objects(self, level_num):
@@ -233,7 +236,7 @@ class Model:      #game encoded in model, view, controller format
                     index += 1 
         h = 0
         while h < len(self.states):
-            self.states[h].next_states.append(h%len(self.states))
+            self.states[h].next_states.append((h+1)%len(self.states))
             h += 1
                     
         i = 0
@@ -255,16 +258,16 @@ class Model:      #game encoded in model, view, controller format
         print self.states[0].name, self.states[0].enables, self.states[0].transition_check, self.states[0].transition_conditions   
    
     def simulation(self):
-        current_state = self.states[self.state_pointer]
-        heater = current_state.enables[0]
-        print heater
-        if heater:
-            self.temperature += 3
-        elif heater == 0:
-            self.temperature -= 3
-        self.state_pointer = current_state.check_transition(self.temperature)
+        self.current_state = self.states[self.state_pointer]
+        enable = self.current_state.enables[0]
+        print enable
+        if "on" in enable:
+            self.temperature += 0.1
+        elif "off" in enable:
+            self.temperature -= 0.1
+        self.state_pointer = self.current_state.check_transition(self.temperature)
         print "temperature is ", self.temperature
-        print current_state.name
+        print self.current_state.name
 
     def update(self):
         """updates based on inputs from the controller"""
@@ -282,6 +285,14 @@ class View:
         self.model = model
         self.screen = screen
     
+    def create_font(self, rect):
+        """
+        Changes the font size based on the size of the box we are adding the label to
+        """
+        size = rect.width/4 -2
+        return pygame.font.SysFont('Arial', size)
+
+
     def draw(self):
         """Draws updated view every 0.001 seconds, or as defined by sleep at end of main loop
         Does not do any updating on its own, takes model objects and displays        
@@ -290,27 +301,30 @@ class View:
         pygame.draw.line(self.screen, (255,255,255), (0,450), (800,450))
         pygame.draw.line(self.screen, (255,255,255), (50,0), (50,800))
         pygame.draw.line(self.screen, (255,255,255), (750,0), (750,800))
-        self.font = pygame.font.SysFont('Arial', 25)
 
-        
         alldroppys = self.model.states_drop_zones + self.model.transitions_drop_zones + self.model.enables_drop_zones
         for droppy in alldroppys:
             pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
-            self.screen.blit(self.font.render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y))
+            self.screen.blit(self.create_font(droppy.rect).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
         for state in self.model.states: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 125, 255), state.rect)
-            self.screen.blit(self.font.render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y))
+            self.screen.blit(self.create_font(state.rect).render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y+0.25*state.rect.height))
         for transition in self.model.transitions: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 155), transition.rect)
-            self.screen.blit(self.font.render(transition.name, True, (255,0,0)), (transition.rect.x, transition.rect.y))
+            self.screen.blit(self.create_font(transition.rect).render(transition.name, True, (255,0,0)), (transition.rect.x, transition.rect.y+0.25*transition.rect.height))
         for enable in self.model.enables: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
-            self.screen.blit(self.font.render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y))
+            self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
-        pygame.draw.rect(screen, pygame.Color(244,244,120), self.model.start_button)
+        pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
+        self.draw_console()        
         pygame.display.update() #Pygame call to update full display
 
+
+    def draw_console(self):
+        fontt = pygame.font.SysFont('Arial', 25)
+        self.screen.blit(fontt.render("Current state is "+str(self.model.current_state.name), True, (255,0,0)), (525,525))
 
 class Controller:
     """ Manipulate game state based on keyboard input, the controller part of our model, view, controller"""

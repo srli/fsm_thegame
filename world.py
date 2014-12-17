@@ -37,6 +37,8 @@ class Level:
 
 
 two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"], ["too hot", "too cold", "on to off", "off to on", "heater on", "heater off"], ["state0", "state1", "transition0", "transition1", "enable0", "enable1"])
+
+# two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
 #three_states = Level(["too bright", "just right", "too dim"], ["bright to right"])
 all_levels = [two_states]
 print all_levels[0].states
