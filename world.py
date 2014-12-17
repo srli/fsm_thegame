@@ -19,14 +19,17 @@ grid = [["SSSXEEXX",
         "TTTXXXXX",
         "TTTXXXXX"]] #each block has width 100px, height 75
 
+class Condition:
+    def __init__(self, name, initial_value):
+        self.name = name
+        self.initial_value = initial_value
 
 class Level:
     def __init__ (self, states, transitions, enables):
        # self.background = background
         self.states = states
         self.enables = enables 
-        self.transitions = transitions 
-
+        self.transitions = transitions
  #name, transition_check_type, value, rect)
 
 #intro = Level(["hallo", "deathofworld.jpg", "help"], [], [], [])
@@ -34,7 +37,7 @@ class Level:
 #act2 = Level(["day", "night"], ["hot", "cold"], ["heater on", "heater off"], [1,2,3])
 
 
-two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
+two_states = [Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"]), Condition("temperature",80)]
 #three_states = Level(["too bright", "just right", "too dim"], ["bright to right"])
 all_levels = [two_states]
-print all_levels[0].states
+print all_levels[0][1].name
