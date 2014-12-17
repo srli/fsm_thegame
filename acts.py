@@ -70,9 +70,10 @@ class State_drop:
         self.rect = rect
         
 class Transition_drop:
-    def __init__(self, name, rect):
+    def __init__(self, name, rect, next_state):
         self.name = name
         self.rect = rect
+        self.next_state = next_state
         
 class Enable_drop:
     def __init__(self, name, rect):
@@ -81,7 +82,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 1
+        self.level = 2
         self.state_pointer = 0
         self.background_pointer = 0       
        
@@ -144,6 +145,7 @@ class Model:      #game encoded in model, view, controller format
                         i += 1
                 elif col == "T":
                     if j < len(self.transitions_names):
+                        
                         self.transitions.append(Transition(self.transitions_names[j][0], 
                                                            self.transitions_names[j][1],self.transitions_names[j][2], pygame.Rect(x,y, 60,60)))
                         j += 1
@@ -157,6 +159,9 @@ class Model:      #game encoded in model, view, controller format
     
     
     def build_drop_zones(self,level_num):
+        toggle = False
+        next_state_number = 1
+              
         current_level = all_levels[level_num][0]
         self.states_names = current_level.states
         self.transitions_names = current_level.transitions
@@ -193,8 +198,20 @@ class Model:      #game encoded in model, view, controller format
                         i += 1
                 elif row == "T":
                     if j < len(self.transitions_names):
-                        self.transitions_drop_zones.append(Transition_drop("transition"+str(j), pygame.Rect(x,y,130,70)))
+                        if (j == len(self.transitions_names) - 1):
+                            print "transition ", str(j), "is 0"
+                            next_state_number = 0
+                        self.transitions_drop_zones.append(Transition_drop("transition"+str(j), pygame.Rect(x,y,130,70), next_state_number))
+                        if not toggle:
+                            next_state_number -= 1
+                            print "transition ", str(j), "is ", next_state_number
+                            toggle = not toggle
+                        elif toggle:
+                            next_state_number += 2
+                            print "transition ", str(j), "is ", next_state_number                            
+                            toggle = not toggle
                         j += 1
+                
                 elif row == "E":
                     if k < len(self.enables_names):
                         self.enables_drop_zones.append(Enable_drop("enable"+str(k), pygame.Rect(x+10,y+10,80,80)))
@@ -244,10 +261,11 @@ class Model:      #game encoded in model, view, controller format
                 if state_drop.rect.contains(state_drag.rect):
                     state_drag.current_index = index
                     index += 1 
-        h = 0
-        while h < len(self.states):
-            self.states[h].next_states.append((h+1)%len(self.states))
-            h += 1
+#        h = 0
+#        
+#        while h < len(self.states):
+#            self.states[h].next_states.append((h+1)%len(self.states))
+#            h += 1
             
         t_first = self.transitions_drop_zones[0]
         self.transitions_drop_zones.remove(self.transitions_drop_zones[0])
@@ -264,9 +282,11 @@ class Model:      #game encoded in model, view, controller format
             if t_first.rect.contains(transition_drag.rect):
                 self.states[0].transition_check.append(transition_drag.transition_check_type)
                 self.states[0].transition_conditions.append(transition_drag.value)
+                self.states[0].next_states.append(t_first.next_state)
             if t_last.rect.contains(transition_drag.rect):
                 self.states[-1].transition_check.append(transition_drag.transition_check_type)
                 self.states[-1].transition_conditions.append(transition_drag.value)
+                self.states[-1].next_states.append(t_last.next_state)
 #            if greater2:                
 #                if t_second_last.rect.contains(transition_drag.rect):
 #                    self.states[-1].transition_check.append(transition_drag.transition_check_type)
@@ -275,15 +295,17 @@ class Model:      #game encoded in model, view, controller format
         i = 0
         while i < len(self.transitions_drop_zones): #name, transition check, transition conditions
             transition_drop1 = self.transitions_drop_zones[i]
-            transition_drop2 = self.transitions_drop_zones[i+1]
+            #transition_drop2 = self.transitions_drop_zones[i+1]
             for transition_drag in self.transitions:
                 if transition_drop1.rect.contains(transition_drag.rect):
                     self.states[i].transition_check.append(transition_drag.transition_check_type)
-                    self.states[i].transition_conditions.append(transition_drag.value)                    
-                if transition_drop2.rect.contains(transition_drag.rect):
-                    self.states[i].transition_check.append(transition_drag.transition_check_type)
                     self.states[i].transition_conditions.append(transition_drag.value)
-            i += 2
+                    self.states[i].next_states.append(transition_drop1.next_state)
+#                if transition_drop2.rect.contains(transition_drag.rect):
+#                    self.states[i].transition_check.append(transition_drag.transition_check_type)
+#                    self.states[i].transition_conditions.append(transition_drag.value)
+#                    self.states[i].next_states.append(transition_drop2.next_state)
+            i += 1
         
         j = 0
         while j < len(self.enables_drop_zones):

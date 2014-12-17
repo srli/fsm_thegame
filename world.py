@@ -42,7 +42,7 @@ class Level:
 
 intro = [Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"], ["too hot", "too cold", "on to off", "off to on", "heater on", "heater off"], ["state0", "state1", "transition0", "transition1", "enable0", "enable1"]),Condition("intro",[0])]
 level1 = [Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater yes", "heater no"]), Condition("temperature",[80,20])]
-level2 = [Level(["peace", "zerstoert", "reconstruction"],[("dragons appear",">", 100), ("reconstruction begins", "<", 20), ("peace acheived!", ">", 90), ("none1", ">", 100), ("none", "<", 100)], 
+level2 = [Level(["peace", "zerstoert", "reconstruction"],[("dragons appear",">", 100), ("reconstruction begins", "<", 20), ("peace acheived!", ">", 90), ("none1", "x", 100), ("none", "x", 100)], 
                 ["workers no", "workers no", "workers yes"]), Condition("HP",[101])]
 
 # two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
