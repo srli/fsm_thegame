@@ -190,7 +190,7 @@ class Model:      #game encoded in model, view, controller format
                         i += 1
                 elif row == "T":
                     if j < len(self.transitions_names):
-                        self.transitions_drop_zones.append(Transition_drop("transition"+str(j), pygame.Rect(x,y,100,70)))
+                        self.transitions_drop_zones.append(Transition_drop("transition"+str(j), pygame.Rect(x,y,130,70)))
                         j += 1
                 elif row == "E":
                     if k < len(self.enables_names):
@@ -204,8 +204,8 @@ class Model:      #game encoded in model, view, controller format
         """
         takes in a list of objects that need to move and where they should be placed and moves them there 
         """
-        from_list = all_levels[level].from_list
-        to_list = all_levels[level].to_list
+        from_list = all_levels[level][0].from_list
+        to_list = all_levels[level][0].to_list
 
         for state in self.states:
             if state.name in from_list:
@@ -324,8 +324,15 @@ class View:
     def create_font(self, rect):
         """
         Changes the font size based on the size of the box we are adding the label to
+
         """
-        size = rect.width/4 -2
+
+        if rect == None:
+            size = 27
+
+        else:
+            size = rect.width/4 -2
+        
         return pygame.font.SysFont('Arial', size)
 
 
@@ -334,6 +341,7 @@ class View:
         Does not do any updating on its own, takes model objects and displays        
         """
         self.screen.fill(pygame.Color(0,0,0)) #Background
+        #self.screen.blit(pygame.image.load("FallT.png"), [0,0])
         pygame.draw.line(self.screen, (255,255,255), (0,450), (800,450))
         pygame.draw.line(self.screen, (255,255,255), (50,0), (50,800))
         pygame.draw.line(self.screen, (255,255,255), (750,0), (750,800))
@@ -341,10 +349,14 @@ class View:
         pygame.draw.rect(screen, pygame.Color(50,50,50), pygame.Rect((0, 450), (800, 450)))
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
 
-        alldroppys = self.model.states_drop_zones + self.model.transitions_drop_zones + self.model.enables_drop_zones
+        alldroppys = self.model.states_drop_zones + self.model.enables_drop_zones
+        
         for droppy in alldroppys:
             pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
             self.screen.blit(self.create_font(droppy.rect).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
+        for droppy in self.model.transitions_drop_zones:
+            pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
+            self.screen.blit(self.create_font(None).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
         for state in self.model.states: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 125, 255), state.rect)
             self.screen.blit(self.create_font(state.rect).render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y+0.25*state.rect.height))
@@ -354,12 +366,26 @@ class View:
         for enable in self.model.enables: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
             self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
-        
+        # for state in self.model.states:
+        #     origin = state.rect.center
+
+
+
+
+        pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
         pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
         self.draw_console()        
         pygame.display.update() #Pygame call to update full display
 
+    
+
+    def draw_introl(self, image):
+        """
+        creates the screen as an image for the tutorial
+        """
+        self.screen.blit(pygame.image.load(image), [0,0])
+        pygame.display.update()
 
     def draw_console(self):
         fontt = pygame.font.SysFont('Arial', 20)
@@ -434,5 +460,18 @@ if __name__ == '__main__':
         mouseX, mouseY = pygame.mouse.get_pos()
         controller.update()
         model.update()
-        view.draw()
-        clock.tick(60) 
+        if model.level == 0:
+            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png"]
+            #for b in range(len(backgrounds)):
+            b = 0
+            while b < len(backgrounds):
+                view.draw_introl(backgrounds[b])
+                for event in pygame.event.get():
+                    if event.type == MOUSEBUTTONDOWN:
+                        print "CLICK!"
+                        b = b+1
+            model.level += 1
+        
+        else:
+            view.draw()        
+        clock.tick(60)

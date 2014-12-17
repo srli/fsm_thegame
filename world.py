@@ -29,9 +29,10 @@ class Level:
        # self.background = background
         self.states = states
         self.enables = enables 
-        self.transitions = transitions
+        self.transitions = transitions 
         self.from_list = from_list
         self.to_list = to_list
+
 
  #name, transition_check_type, value, rect)
 
@@ -48,3 +49,8 @@ level2 = [Level(["peace", "zerstoert", "reconstruction"],[("dragons appear",">",
 
 all_levels = [intro, level1, level2]
 print all_levels[1][1].name
+
+#two_states = [Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"]), Condition("temperature",80)]
+# two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
+
+#three_states = Level(["too bright", "just right", "too dim"], ["bright to right"])
