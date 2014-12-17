@@ -188,7 +188,7 @@ class Model:      #game encoded in model, view, controller format
                         i += 1
                 elif row == "T":
                     if j < len(self.transitions_names):
-                        self.transitions_drop_zones.append(Transition_drop("transition"+str(j), pygame.Rect(x,y,100,70)))
+                        self.transitions_drop_zones.append(Transition_drop("transition"+str(j), pygame.Rect(x,y,130,70)))
                         j += 1
                 elif row == "E":
                     if k < len(self.enables_names):
@@ -292,8 +292,15 @@ class View:
     def create_font(self, rect):
         """
         Changes the font size based on the size of the box we are adding the label to
+
         """
-        size = rect.width/4 -2
+
+        if rect == None:
+            size = 27
+
+        else:
+            size = rect.width/4 -2
+        
         return pygame.font.SysFont('Arial', size)
 
 
@@ -306,10 +313,15 @@ class View:
         pygame.draw.line(self.screen, (255,255,255), (50,0), (50,800))
         pygame.draw.line(self.screen, (255,255,255), (750,0), (750,800))
 
-        alldroppys = self.model.states_drop_zones + self.model.transitions_drop_zones + self.model.enables_drop_zones
+        alldroppys = self.model.states_drop_zones + self.model.enables_drop_zones
+
+
         for droppy in alldroppys:
             pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
             self.screen.blit(self.create_font(droppy.rect).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
+        for droppy in self.model.transitions_drop_zones:
+            pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
+            self.screen.blit(self.create_font(None).render(droppy.name, True, (255,0,0)), (droppy.rect.x, droppy.rect.y+0.25*droppy.rect.height))
         for state in self.model.states: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 125, 255), state.rect)
             self.screen.blit(self.create_font(state.rect).render(state.name, True, (255,0,0)), (state.rect.x, state.rect.y+0.25*state.rect.height))
