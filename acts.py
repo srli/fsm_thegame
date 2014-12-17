@@ -412,9 +412,9 @@ class View:
             pygame.draw.line(self.screen, (255, 255, 255), next.rect.midleft, now.rect.midright)
 
             if s == 1:
-                pygame.draw.line(self.screen, (255, 255, 255), next.rect.bottomleft, ((next.rect.x + 0.5*(now.rect.x - next.rect.x)), next.rect.y+125))
+                pygame.draw.line(self.screen, (255, 255, 255), next.rect.bottomleft, ((next.rect.x + 0.25*(now.rect.x - next.rect.x)), next.rect.y+200))
                 #pygame.draw.line(self.screen, (255, 255, 255), (endx+127, endy), nex
-
+                pygame.draw.line(self.screen, (255, 255, 255), now.rect.bottomright, ((next.rect.x + 0.25*(now.rect.x - next.rect.x)), next.rect.y+200))
 
 
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
