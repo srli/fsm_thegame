@@ -24,9 +24,11 @@ class State:
     def check_transition(self, transition):
         i = 0
         while i < len(self.transition_conditions):
-            print self.transition_check[i]
-            print self.next_states[i]
-            if self.transition_check[i] == ">":
+            print "transistions of", self.name, " are ", self.transition_check[i]
+            print "next states are", self.next_states[i]
+            if self.transition_check[i] == "x":
+                return self.current_index
+            elif self.transition_check[i] == ">":
                 if transition > self.transition_conditions[i]:
                     return self.next_states[i]
                 else:
@@ -45,6 +47,7 @@ class State:
                 print "Check transition condition of state", self.name
                 return self.current_index
             i += 1
+        return self.current_index
             
 class Transition:
     def __init__(self, name, transition_check_type, value, rect):
@@ -78,7 +81,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 0
+        self.level = 1
         self.state_pointer = 0
         self.background_pointer = 0       
        
@@ -251,12 +254,12 @@ class Model:      #game encoded in model, view, controller format
 
         t_last = self.transitions_drop_zones[-1]
         self.transitions_drop_zones.remove(self.transitions_drop_zones[-1])
-        
-        if len(self.transitions_drop_zones) > 2:
-            greater2 = True
-            t_second_last = self.transitions_drop_zones[-2]
-            self.transitions_drop_zones.remove(self.transitions_drop_zones[-2])
-        
+#        
+#        if len(self.transitions_drop_zones) > 2:
+#            greater2 = True
+#            t_second_last = self.transitions_drop_zones[-2]
+#            self.transitions_drop_zones.remove(self.transitions_drop_zones[-2])
+#        
         for transition_drag in self.transitions:
             if t_first.rect.contains(transition_drag.rect):
                 self.states[0].transition_check.append(transition_drag.transition_check_type)
@@ -264,11 +267,11 @@ class Model:      #game encoded in model, view, controller format
             if t_last.rect.contains(transition_drag.rect):
                 self.states[-1].transition_check.append(transition_drag.transition_check_type)
                 self.states[-1].transition_conditions.append(transition_drag.value)
-            if greater2:                
-                if t_second_last.rect.contains(transition_drag.rect):
-                    self.states[-1].transition_check.append(transition_drag.transition_check_type)
-                    self.states[-1].transition_conditions.append(transition_drag.value)
-            
+#            if greater2:                
+#                if t_second_last.rect.contains(transition_drag.rect):
+#                    self.states[-1].transition_check.append(transition_drag.transition_check_type)
+#                    self.states[-1].transition_conditions.append(transition_drag.value)
+#            
         i = 0
         while i < len(self.transitions_drop_zones): #name, transition check, transition conditions
             transition_drop1 = self.transitions_drop_zones[i]
@@ -293,6 +296,7 @@ class Model:      #game encoded in model, view, controller format
         self.condition = self.init_conditions[self.states[0].current_index]
    
     def simulation(self):
+        print self.state_pointer
         self.current_state = self.states[self.state_pointer]
         enable = self.current_state.enables[0]
         if "yes" in enable:
@@ -368,9 +372,6 @@ class View:
             self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
         # for state in self.model.states:
         #     origin = state.rect.center
-
-
-
 
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
         pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
