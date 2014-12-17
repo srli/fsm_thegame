@@ -309,12 +309,13 @@ class View:
         Does not do any updating on its own, takes model objects and displays        
         """
         self.screen.fill(pygame.Color(0,0,0)) #Background
+        #self.screen.blit(pygame.image.load("FallT.png"), [0,0])
         pygame.draw.line(self.screen, (255,255,255), (0,450), (800,450))
         pygame.draw.line(self.screen, (255,255,255), (50,0), (50,800))
         pygame.draw.line(self.screen, (255,255,255), (750,0), (750,800))
 
         alldroppys = self.model.states_drop_zones + self.model.enables_drop_zones
-
+        
 
         for droppy in alldroppys:
             pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
@@ -331,12 +332,27 @@ class View:
         for enable in self.model.enables: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
             self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
+        
+        # for state in self.model.states:
+        #     origin = state.rect.center
+
+
+
+
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
         pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
         self.draw_console()        
         pygame.display.update() #Pygame call to update full display
 
+    
+
+    def draw_introl(self, image):
+        """
+        creates the screen as an image for the tutorial
+        """
+        self.screen.blit(pygame.image.load(image), [0,0])
+        pygame.display.update()
 
     def draw_console(self):
         fontt = pygame.font.SysFont('Arial', 25)
@@ -410,5 +426,20 @@ if __name__ == '__main__':
         mouseX, mouseY = pygame.mouse.get_pos()
         controller.update()
         model.update()
-        view.draw()
+
+        if model.level == 0:
+            backgrounds = ["FallT.png","hope.png", "SM.png", "ACT1_title.png", "Act1_intro_text.png"]
+            #for b in range(len(backgrounds)):
+            b = 0
+            while b < len(backgrounds):
+                view.draw_introl(backgrounds[b])
+                for event in pygame.event.get():
+                    if event.type == MOUSEBUTTONDOWN:
+                        print "CLICK!"
+                        b = b+1
+            model.level += 1
+        
+        else:
+            view.draw()
+        
         clock.tick(60)
