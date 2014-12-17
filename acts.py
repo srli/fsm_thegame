@@ -412,14 +412,14 @@ class View:
         pygame.draw.line(self.screen, (109, 190, 69), start, end, width)
         if begin == "end":
             if facing == "up":
-                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-25, end[1]+5), width)
-                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-2, end[1]+20), width)
+                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-25, end[1]+0), width)
+                pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-5, end[1]+20), width)
             elif facing == "down":
                 if dir == "right":
                     pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-25, end[1]-5), width)
-                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+3, end[1]-20), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+5, end[1]-20), width)
                 else:
-                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+30, end[1]-15), width)
+                    pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]+20, end[1]-15), width)
                     pygame.draw.line(self.screen, (109, 190, 69), end, (end[0]-5, end[1]-25), width)
 
             else:
