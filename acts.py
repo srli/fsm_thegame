@@ -8,6 +8,7 @@ Created on Tue Dec  9 15:40:14 2014
 import pygame, random, math, time
 from pygame.locals import *
 from world import *
+import time
          
 class State:
     def __init__ (self,  name, rect): #, transition_check, transition_conditions, next_states, enables):
@@ -82,7 +83,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 2
+        self.level = 1
         self.state_pointer = 0
         self.background_pointer = 0       
        
@@ -113,7 +114,26 @@ class Model:      #game encoded in model, view, controller format
         self.current_state = None
         #self.current_state = self.states[self.state_pointer]
 
+        self.win_condition = False
+        self.start = 0
+
+    
+    def reset(self):
+        """ resets lists for the next level"""
+        self.states_names = []
+        self.states = []
+        self.transitions_names = []
+        self.transitions = []
+        self.enables_names = []
+        self.enables = []
         
+        self.states_drop_zones = []
+        self.transitions_drop_zones = []
+        self.enables_drop_zones = []
+        self.win_condition = False
+        self.start = 0
+
+
     def build_drag_objects(self, level_num):
         """Looks at the objects imported from the world python script and builds
         """
@@ -313,8 +333,22 @@ class Model:      #game encoded in model, view, controller format
             self.link_states()
             self.begin_linking = False
             self.begin_simulation = True
+            self.start = time.time()
         if self.begin_simulation:
             self.simulation()
+            self.check_win_conditions(time.time()-self.start)
+
+
+    def check_win_conditions(self, time):
+        if time > 10:
+            if self.level == 1 and 40 <= self.condition <= 70:
+                self.win_condition = True
+                self.begin_simulation = False
+            elif self.level == 2 and self.condition >= 60:
+                self.win_condition = True
+                self.begin_simulation = False
+
+
         
 class View:
     """ Draws our game in a Pygame window, the view part of our model, view, controller"""
@@ -493,6 +527,12 @@ if __name__ == '__main__':
                         print "CLICK!"
                         b = b+1
             model.level += 1
+        elif model.win_condition:
+            model.level += 1
+            model.reset()
+            model.build_drag_objects(model.level) #builds first screen immediately
+            model.build_drop_zones(model.level)
+        
         
         else:
             view.draw()        
