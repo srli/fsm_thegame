@@ -78,7 +78,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 0
+        self.level = 2
         self.state_pointer = 0
         self.background_pointer = 0       
        
@@ -103,13 +103,15 @@ class Model:      #game encoded in model, view, controller format
         #self.current_background = backgrounds[background_pointer]
         
         self.condition_name = "none"
+        self.init_conditions = []
         self.condition = 0        
-        self.init_predef(self.level)
+        #self.init_predef(self.level)
 
         self.build_drag_objects(self.level) #builds first screen immediately
         self.build_drop_zones(self.level)
         
-        self.current_state = self.states[self.state_pointer]
+        self.current_state = None
+        #self.current_state = self.states[self.state_pointer]
 
         
     def build_drag_objects(self, level_num):
@@ -118,7 +120,7 @@ class Model:      #game encoded in model, view, controller format
         current_level = all_levels[level_num][0]
         self.states_names = current_level.states
         self.condition_name = all_levels[level_num][1].name
-        self.condition = all_levels[level_num][1].initial_value
+        self.init_conditions = all_levels[level_num][1].initial_values
         #print self.states_names
         #self.backgrounds = current_level.backgrounds
         self.transitions_names = current_level.transitions
@@ -161,22 +163,22 @@ class Model:      #game encoded in model, view, controller format
 #                  "SXTXSXTXSXTXSXTXS",
 #                  "EXXXEXXXEXXXEXXXE"]                 
   
-        layout = ["XSE",
-                  "XXX",
-                  "TTX",
-                  "XXX",
-                  "XSE",
-                  "XXX",
-                  "TTX",
-                  "XXX",
-                  "XSE",
-                  "XXX",
-                  "TTX",
-                  "XXX",
-                  "XSE"]
+        layout = ["XSEX",
+                  "XXXX",
+                  "TTXX",
+                  "XXXX",
+                  "XSEX",
+                  "XXXX",
+                  "TTXT",
+                  "XXXX",
+                  "XSEX",
+                  "XXXX",
+                  "TTXX",
+                  "XXXX",
+                  "XSEX"]
 
                
-        x_width = 700/(3*len(self.transitions_names))
+        x_width = 700/(3*len(self.states_names))
         x = 50
         y = 50
         i = j = k = 0
@@ -242,15 +244,37 @@ class Model:      #game encoded in model, view, controller format
         while h < len(self.states):
             self.states[h].next_states.append((h+1)%len(self.states))
             h += 1
-                    
+            
+        t_first = self.transitions_drop_zones[0]
+        self.transitions_drop_zones.remove(self.transitions_drop_zones[0])
+        t_second_last = self.transitions_drop_zones[-2]
+        self.transitions_drop_zones.remove(self.transitions_drop_zones[-2])
+        t_last = self.transitions_drop_zones[-1]
+        self.transitions_drop_zones.remove(self.transitions_drop_zones[-1])
+        
+        for transition_drag in self.transitions:
+            if t_first.rect.contains(transition_drag.rect):
+                self.states[0].transition_check.append(transition_drag.transition_check_type)
+                self.states[0].transition_conditions.append(transition_drag.value)
+            if t_second_last.rect.contains(transition_drag.rect):
+                self.states[-1].transition_check.append(transition_drag.transition_check_type)
+                self.states[-1].transition_conditions.append(transition_drag.value)
+            if t_last.rect.contains(transition_drag.rect):
+                self.states[-1].transition_check.append(transition_drag.transition_check_type)
+                self.states[-1].transition_conditions.append(transition_drag.value)
+            
         i = 0
         while i < len(self.transitions_drop_zones): #name, transition check, transition conditions
-            transition_drop = self.transitions_drop_zones[i]
+            transition_drop1 = self.transitions_drop_zones[i]
+            transition_drop2 = self.transitions_drop_zones[i+1]
             for transition_drag in self.transitions:
-                if transition_drop.rect.contains(transition_drag.rect):
+                if transition_drop1.rect.contains(transition_drag.rect):
+                    self.states[i].transition_check.append(transition_drag.transition_check_type)
+                    self.states[i].transition_conditions.append(transition_drag.value)                    
+                if transition_drop2.rect.contains(transition_drag.rect):
                     self.states[i].transition_check.append(transition_drag.transition_check_type)
                     self.states[i].transition_conditions.append(transition_drag.value)
-            i += 1
+            i += 2
         
         j = 0
         while j < len(self.enables_drop_zones):
@@ -260,15 +284,17 @@ class Model:      #game encoded in model, view, controller format
                     self.states[j].enables.append(enable_drag.name)
             j += 1 
         print self.states[0].name, self.states[0].enables, self.states[0].transition_check, self.states[0].transition_conditions   
+        self.condition = self.init_conditions[self.states[0].current_index]
    
     def simulation(self):
         self.current_state = self.states[self.state_pointer]
         enable = self.current_state.enables[0]
-        print enable
-        if "on" in enable:
+        if "yes" in enable:
             self.condition += 0.1
-        elif "off" in enable:
-            self.condition -= 0.1
+        elif "no" in enable:
+            self.condition -= 0.5
+        else:
+            self.condition += 0.2
         self.state_pointer = self.current_state.check_transition(self.condition)
         print self.condition_name, " is ", self.condition
         print self.current_state.name
@@ -306,6 +332,9 @@ class View:
         pygame.draw.line(self.screen, (255,255,255), (50,0), (50,800))
         pygame.draw.line(self.screen, (255,255,255), (750,0), (750,800))
 
+        pygame.draw.rect(screen, pygame.Color(50,50,50), pygame.Rect((0, 450), (800, 450)))
+        pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
+
         alldroppys = self.model.states_drop_zones + self.model.transitions_drop_zones + self.model.enables_drop_zones
         for droppy in alldroppys:
             pygame.draw.rect(screen, pygame.Color(120, 125, 255), droppy.rect)
@@ -319,7 +348,7 @@ class View:
         for enable in self.model.enables: #Draws each wall block
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
             self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
-        pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
+        
         pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
         self.draw_console()        
@@ -327,8 +356,9 @@ class View:
 
 
     def draw_console(self):
-        fontt = pygame.font.SysFont('Arial', 25)
-        self.screen.blit(fontt.render("Current state is "+str(self.model.current_state.name), True, (255,0,0)), (525,525))        
+        fontt = pygame.font.SysFont('Arial', 20)
+        self.screen.blit(fontt.render("Drag elements to their correct spaces", True, (255,0,0)), (50,460))
+        #self.screen.blit(fontt.render("Current state is "+str(self.model.current_state.name), True, (255,0,0)), (525,525))        
         self.screen.blit(fontt.render("Current "+str(self.model.condition_name) + " is "+str(self.model.condition), True, (255,0,0)), (525,575))
         
 class Controller:
@@ -356,7 +386,7 @@ class Controller:
             print "starting!"
         elif self.model.end_button.collidepoint((mouseX, mouseY)):
             self.model.begin_simulation = False            
-            print "starting!"
+            print "ending!"
     
     def un_drag(self):        
         element = self.all_rects[self.drag_index]
@@ -399,4 +429,4 @@ if __name__ == '__main__':
         controller.update()
         model.update()
         view.draw()
-        clock.tick(60)
+        clock.tick(60) 
