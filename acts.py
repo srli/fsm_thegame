@@ -579,7 +579,7 @@ if __name__ == '__main__':
         elif model.win_condition:
             model.level += 1
             if model.level == 2:
-                backgrounds = ["Level2Trans.png", "Level2Exp.png"]
+                backgrounds = ["YouWinPlants.png", "Level2Trans.png", "Level2Exp.png"]
             b = 0
             while b < len(backgrounds):
                 view.draw_introl(backgrounds[b])
