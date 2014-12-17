@@ -21,11 +21,13 @@ grid = [["SSSXEEXX",
 
 
 class Level:
-    def __init__ (self, states, transitions, enables):
+    def __init__ (self, states, transitions, enables, from_list=[], to_list=[]):
        # self.background = background
         self.states = states
         self.enables = enables 
         self.transitions = transitions 
+        self.from_list = from_list
+        self.to_list = to_list
 
  #name, transition_check_type, value, rect)
 
@@ -34,7 +36,7 @@ class Level:
 #act2 = Level(["day", "night"], ["hot", "cold"], ["heater on", "heater off"], [1,2,3])
 
 
-two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"])
-three_states = Level(["too bright", "just right", "too dim"], ["bright to right"])
-all_levels = [test]
+two_states = Level(["too hot", "too cold"], [("on to off",">",70), ("off to on", "<", 40)], ["heater on", "heater off"], ["too hot", "too cold", "on to off", "off to on", "heater on", "heater off"], ["state0", "state1", "transition0", "transition1", "enable0", "enable1"])
+#three_states = Level(["too bright", "just right", "too dim"], ["bright to right"])
+all_levels = [two_states]
 print all_levels[0].states

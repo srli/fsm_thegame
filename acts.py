@@ -101,6 +101,9 @@ class Model:      #game encoded in model, view, controller format
         
         self.build_drag_objects(0) #builds first screen immediately
         self.build_drop_zones(0)
+
+
+        self.init_predef(self.level)
         
         self.temperature = 80
         
@@ -187,6 +190,38 @@ class Model:      #game encoded in model, view, controller format
                 y += 100#Traverses each column in the world file
             y = 50 #Goes to the next row
             x += x_width #Restarts at the first column
+
+    def init_predef(self, level):
+        """
+        takes in a list of objects that need to move and where they should be placed and moves them there 
+        """
+        from_list = all_levels[level].from_list
+        to_list = all_levels[level].to_list
+
+        for state in self.states:
+            if state.name in from_list:
+                index = from_list.index(state.name)
+                for state_drop in self.states_drop_zones:
+                    if state_drop.name == to_list[index]:
+                        state.rect.x = state_drop.rect.x + 10
+                        state.rect.y = state_drop.rect.y + 10
+
+        for enable in self.enables:
+            if enable.name in from_list:
+                index = from_list.index(enable.name)
+                for enable_drop in self.enables_drop_zones:
+                    if enable_drop.name == to_list[index]:
+                        enable.rect.x = enable_drop.rect.x + 10
+                        enable.rect.y = enable_drop.rect.y + 10
+
+        for trans in self.transitions:
+            if trans.name in from_list:
+                index = from_list.index(trans.name)
+                for trans_drop in self.transitions_drop_zones:
+                    if trans_drop.name == to_list[index]:
+                        trans.rect.x = trans_drop.rect.x + 10
+                        trans.rect.y = trans_drop.rect.y + 10
+    
 
     def link_states(self):
         print "linking states"
