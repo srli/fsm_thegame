@@ -24,6 +24,8 @@ class State:
     def check_transition(self, transition):
         i = 0
         while i < len(self.transition_conditions):
+            print self.transition_check[i]
+            print self.next_states[i]
             if self.transition_check[i] == ">":
                 if transition > self.transition_conditions[i]:
                     return self.next_states[i]
@@ -91,8 +93,8 @@ class Model:      #game encoded in model, view, controller format
         self.transitions_drop_zones = []
         self.enables_drop_zones = []
         
-        self.start_button = pygame.Rect((550, 500), (50,30))
-        self.end_button = pygame.Rect((700, 700), (50,30))
+        self.start_button = pygame.Rect((550, 475), (50,30))
+        self.end_button = pygame.Rect((700, 475), (50,30))
         
         self.begin_linking = False
         self.begin_simulation = False
@@ -103,6 +105,7 @@ class Model:      #game encoded in model, view, controller format
         self.build_drag_objects(self.level) #builds first screen immediately
         self.build_drop_zones(self.level)
         
+        self.current_state = self.states[self.state_pointer]
         self.temperature = 80
         
     def build_drag_objects(self, level_num):
@@ -221,16 +224,16 @@ class Model:      #game encoded in model, view, controller format
         print self.states[0].name, self.states[0].enables, self.states[0].transition_check, self.states[0].transition_conditions   
    
     def simulation(self):
-        current_state = self.states[self.state_pointer]
-        enable = current_state.enables[0]
+        self.current_state = self.states[self.state_pointer]
+        enable = self.current_state.enables[0]
         print enable
         if "on" in enable:
             self.temperature += 0.1
         elif "off" in enable:
             self.temperature -= 0.1
-        self.state_pointer = current_state.check_transition(self.temperature)
+        self.state_pointer = self.current_state.check_transition(self.temperature)
         print "temperature is ", self.temperature
-        print current_state.name
+        print self.current_state.name
 
     def update(self):
         """updates based on inputs from the controller"""
@@ -279,10 +282,15 @@ class View:
             pygame.draw.rect(screen, pygame.Color(255, 255, 255), enable.rect)
             self.screen.blit(self.create_font(enable.rect).render(enable.name, True, (255,0,0)), (enable.rect.x, enable.rect.y+0.25*enable.rect.height))
         pygame.draw.rect(screen, pygame.Color(120,120,120), pygame.Rect((500, 450), (300, 450)))
-        pygame.draw.rect(screen, pygame.Color(244,244,120), self.model.start_button)
+        pygame.draw.rect(screen, pygame.Color(120,244,120), self.model.start_button)
         pygame.draw.rect(screen, pygame.Color(244,120,120), self.model.end_button)
+        self.draw_console()        
         pygame.display.update() #Pygame call to update full display
 
+
+    def draw_console(self):
+        fontt = pygame.font.SysFont('Arial', 25)
+        self.screen.blit(fontt.render("Current state is "+str(self.model.current_state.name), True, (255,0,0)), (525,525))
 
 class Controller:
     """ Manipulate game state based on keyboard input, the controller part of our model, view, controller"""
