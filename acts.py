@@ -78,7 +78,7 @@ class Enable_drop:
         
 class Model:      #game encoded in model, view, controller format
     def __init__(self):
-        self.level = 1
+        self.level = 0
         self.state_pointer = 0
         self.background_pointer = 0       
        
