@@ -102,19 +102,23 @@ class Model:      #game encoded in model, view, controller format
         #self.current_state = states[state_pointer]
         #self.current_background = backgrounds[background_pointer]
         
+        self.condition_name = "none"
+        self.condition = 0        
         self.init_predef(self.level)
 
         self.build_drag_objects(self.level) #builds first screen immediately
         self.build_drop_zones(self.level)
         
         self.current_state = self.states[self.state_pointer]
-        self.temperature = 80
+
         
     def build_drag_objects(self, level_num):
         """Looks at the objects imported from the world python script and builds
         """
-        current_level = all_levels[level_num]
+        current_level = all_levels[level_num][0]
         self.states_names = current_level.states
+        self.condition_name = all_levels[level_num][1].name
+        self.condition = all_levels[level_num][1].initial_value
         #print self.states_names
         #self.backgrounds = current_level.backgrounds
         self.transitions_names = current_level.transitions
@@ -148,7 +152,7 @@ class Model:      #game encoded in model, view, controller format
     
     
     def build_drop_zones(self,level_num):
-        current_level = all_levels[level_num]
+        current_level = all_levels[level_num][0]
         self.states_names = current_level.states
         self.transitions_names = current_level.transitions
         self.enables_names = current_level.enables        
@@ -262,11 +266,11 @@ class Model:      #game encoded in model, view, controller format
         enable = self.current_state.enables[0]
         print enable
         if "on" in enable:
-            self.temperature += 0.1
+            self.condition += 0.1
         elif "off" in enable:
-            self.temperature -= 0.1
-        self.state_pointer = self.current_state.check_transition(self.temperature)
-        print "temperature is ", self.temperature
+            self.condition -= 0.1
+        self.state_pointer = self.current_state.check_transition(self.condition)
+        print self.condition_name, " is ", self.condition
         print self.current_state.name
 
     def update(self):
@@ -336,8 +340,9 @@ class View:
 
     def draw_console(self):
         fontt = pygame.font.SysFont('Arial', 25)
-        self.screen.blit(fontt.render("Current state is "+str(self.model.current_state.name), True, (255,0,0)), (525,525))
-
+        self.screen.blit(fontt.render("Current state is "+str(self.model.current_state.name), True, (255,0,0)), (525,525))        
+        self.screen.blit(fontt.render("Current "+str(self.model.condition_name) + " is "+str(self.model.condition), True, (255,0,0)), (525,575))
+        
 class Controller:
     """ Manipulate game state based on keyboard input, the controller part of our model, view, controller"""
     def __init__(self, model):
